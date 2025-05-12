@@ -3,10 +3,13 @@ import logging
 import ctypes
 from app.core.calculations.cpp_loader import cpp_loader
 
+
 logger = logging.getLogger(__name__)
+
 
 # Загрузка C++ библиотеки при импорте модуля
 cpp_loader.load_library("libcomet_calculations")
+
 
 try:
     # Получаем функции из C++ библиотеки
@@ -15,7 +18,7 @@ try:
         [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double],
         ctypes.c_double
     )
-    
+
     estimate_comp = cpp_loader.get_function(
         "estimate_comet_composition",
         [ctypes.c_double],
@@ -24,6 +27,7 @@ try:
 except Exception as e:
     logger.error(f"Failed to load C++ functions: {str(e)}")
     raise
+
 
 def calculate(file_data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
     """Python-обертка для C++ расчета сублимации"""
@@ -35,18 +39,18 @@ def calculate(file_data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str
             "P": 1.0,
             "mu": 18.0
         }
-        
+
         # Обновление параметров
         params = {**default_params, **parameters}
-        
+
         # Вызов C++ функции
         Tsub = calculate_temp(
             params["H"], params["Pb"], params["P"], params["mu"]
         )
-        
+
         # Получение состава
         composition = estimate_comp(Tsub).decode('utf-8')
-        
+
         return {
             "value": Tsub,
             "units": "K",

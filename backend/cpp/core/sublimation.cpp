@@ -4,7 +4,9 @@
 #include <string>
 #include <sstream>
 
+
 namespace comet {
+
 
 double SublimationCalculator::calculate_temperature(double H, double P0, double P, double mu) {
     if (P0 <= 0 || P <= 0 || mu <= 0) {
@@ -17,6 +19,7 @@ double SublimationCalculator::calculate_temperature(double H, double P0, double 
     return H / denominator;
 }
 
+
 std::string SublimationCalculator::estimate_composition(double temperature) {
     if (temperature < 50) {
         return "CO, CO2, N2 (Volatile ices)";
@@ -26,5 +29,6 @@ std::string SublimationCalculator::estimate_composition(double temperature) {
         return "Silicates, metals (Refractory materials)";
     }
 }
+
 
 } // namespace comet
