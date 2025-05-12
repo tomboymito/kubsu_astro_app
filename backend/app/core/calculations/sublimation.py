@@ -1,7 +1,7 @@
 from typing import Dict, Any
 import logging
 import ctypes
-from app.core.calculations.cpp_loader import cpp_loader
+from backend.app.core.calculations.cpp_loader import cpp_loader
 
 
 logger = logging.getLogger(__name__)

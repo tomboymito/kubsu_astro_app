@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from app.api.endpoints import router as api_router
-from app.core.services.logger import setup_logging
+from backend.app.api.endpoints import router as api_router
+from backend.app.core.services.logger import setup_logging
 
 
 app = FastAPI(

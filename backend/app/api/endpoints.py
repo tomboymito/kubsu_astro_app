@@ -2,8 +2,8 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 from typing import Optional, Literal, Dict, Any
-from app.core.services.file_parser import parse_file
-from app.core.calculations import (
+from backend.app.core.services.file_parser import parse_file
+from backend.app.core.calculations import (
     sublimation,
     mass,
     nucleus,

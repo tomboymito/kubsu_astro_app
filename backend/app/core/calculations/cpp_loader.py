@@ -15,7 +15,7 @@ class CppLoader:
         try:
             # Определяем расширение файла в зависимости от ОС
             if platform.system() == "Windows":
-                lib_ext = ".dll"
+                lib_ext = ".pyd"
             elif platform.system() == "Linux":
                 lib_ext = ".so"
             else:
