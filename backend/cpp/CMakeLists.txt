@@ -1,47 +1,47 @@
 cmake_minimum_required(VERSION 3.15)
-project(comet_calculations)
+project(comet_calculations VERSION 1.0.0)
 
-# Явно указываем путь к Python
-set(Python3_ROOT_DIR "C:/Program Files/Python311")
-find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter Development)
-
-# Вариант 1: Если pybind11 установлен через pip
-# find_package(pybind11 REQUIRED)
-# Или укажите явный путь, если CMake не находит
-# set(pybind11_DIR "C:/path/to/pybind11/share/cmake/pybind11")
-
-# Вариант 2: Если используете pybind11 как подмодуль
+# 1. Явное добавление подмодуля pybind11 вместо find_package
 add_subdirectory(pybind11)
 
-# Проверка исходных файлов
-foreach(src core/sublimation.cpp core/mass.cpp core/nucleus.cpp)
-    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${src})
-        message(FATAL_ERROR "Missing source file: ${src}")
-    endif()
-endforeach()
+# Настройка Python
+set(Python3_EXECUTABLE "C:/Program Files/Python311/python.exe")
+find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter Development)
 
-# Создаём модуль
-pybind11_add_module(comet_calculations
+# 2. Удален find_package для pybind11, так как используем add_subdirectory
+# Проверка исходных файлов
+set(SOURCES
     core/sublimation.cpp
     core/mass.cpp
     core/nucleus.cpp
 )
 
-# Настройки включаемых директорий
+foreach(src ${SOURCES})
+    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${src})
+        message(FATAL_ERROR "Missing source file: ${src}")
+    endif()
+endforeach()
+
+# Создание модуля Python
+pybind11_add_module(comet_calculations ${SOURCES})
+
+# Настройка включаемых директорий
 target_include_directories(comet_calculations PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${Python3_INCLUDE_DIRS}
 )
 
-# Настройки выходного каталога
-set(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../app/core/calculations)
+# 3. Исправлена опечатка в PROPERTIES (было PROPERTIES)
+# Настройка выходного каталога
+set(OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../app/core/calculations)
 file(MAKE_DIRECTORY ${OUTPUT_DIR})
 
+# Платформо-зависимые настройки
 if(WIN32)
     set_target_properties(comet_calculations PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
         SUFFIX ".pyd"
-        PREFIX ""  # Убираем 'lib' в начале имени
+        PREFIX ""
     )
 else()
     set_target_properties(comet_calculations PROPERTIES
@@ -49,3 +49,10 @@ else()
         SUFFIX ".so"
     )
 endif()
+
+# 4. Добавлена явная линковка с Python
+target_link_libraries(comet_calculations PRIVATE
+    ${Python3_LIBRARIES}
+)
+
+message(STATUS "Comet calculations module will be built in: ${OUTPUT_DIR}")

@@ -1,5 +1,5 @@
 import pytest
-from backend.app.core.calculations.sublimation import calculate_temperature
+from app.core.calculations.sublimation import calculate_temperature
 
 
 def test_sublimation_temperature_calculation():
