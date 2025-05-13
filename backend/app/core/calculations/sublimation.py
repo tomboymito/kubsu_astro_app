@@ -2,7 +2,7 @@ import os
 from typing import Dict, Any
 import logging
 import ctypes
-from backend.app.core.calculations.cpp_loader import cpp_loader
+from .cpp_loader import cpp_loader  # Относительный импорт внутри пакета
 
 logger = logging.getLogger(__name__)
 
