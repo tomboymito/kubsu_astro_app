@@ -1,44 +1,51 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 project(comet_calculations)
 
-# Настройка Python и pybind11
-find_package(Python 3.10 REQUIRED COMPONENTS Development)
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
-set(PYBIND11_FINDPYTHON ON)
-find_package(pybind11 REQUIRED)
+# Явно указываем путь к Python
+set(Python3_ROOT_DIR "C:/Program Files/Python311")
+find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter Development)
 
-# Добавляем модуль
+# Вариант 1: Если pybind11 установлен через pip
+# find_package(pybind11 REQUIRED)
+# Или укажите явный путь, если CMake не находит
+# set(pybind11_DIR "C:/path/to/pybind11/share/cmake/pybind11")
+
+# Вариант 2: Если используете pybind11 как подмодуль
+add_subdirectory(pybind11)
+
+# Проверка исходных файлов
+foreach(src core/sublimation.cpp core/mass.cpp core/nucleus.cpp)
+    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${src})
+        message(FATAL_ERROR "Missing source file: ${src}")
+    endif()
+endforeach()
+
+# Создаём модуль
 pybind11_add_module(comet_calculations
     core/sublimation.cpp
     core/mass.cpp
     core/nucleus.cpp
 )
 
-# Указываем включаемые директории
+# Настройки включаемых директорий
 target_include_directories(comet_calculations PRIVATE
     ${PROJECT_SOURCE_DIR}/include
+    ${Python3_INCLUDE_DIRS}
 )
 
-# Для macOS специфические настройки
-if(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-endif()
+# Настройки выходного каталога
+set(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../app/core/calculations)
+file(MAKE_DIRECTORY ${OUTPUT_DIR})
 
 if(WIN32)
     set_target_properties(comet_calculations PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../app/core/calculations
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
         SUFFIX ".pyd"
+        PREFIX ""  # Убираем 'lib' в начале имени
     )
 else()
     set_target_properties(comet_calculations PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../app/core/calculations
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
         SUFFIX ".so"
     )
 endif()
-
-# Устанавливаем выходной каталог
-set_target_properties(comet_calculations PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../app/core/calculations
-    SUFFIX ".so"
-)
