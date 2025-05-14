@@ -9,12 +9,16 @@ logger = logging.getLogger(__name__)
 class CppLoader:
     def __init__(self):
         self._lib = None
-        self._lib_ext = ".pyd" if platform.system() == "Windows" else ".so"
+        self._lib_ext = {
+            "Windows": ".pyd",
+            "Linux": ".so",
+            "Darwin": ".so"
+        }.get(platform.system(), ".so")
 
     def load_library(self, lib_path: str) -> bool:
-    """Загружает библиотеку по полному пути"""
+        """Загружает библиотеку по полному пути"""
         try:
-            lib_path = str(Path(lib_path).absolute())
+            lib_path = str(Path(lib_path).with_suffix(self._lib_ext))
             self._lib = ctypes.CDLL(lib_path)
             logger.info(f"Successfully loaded library: {lib_path}")
             return True

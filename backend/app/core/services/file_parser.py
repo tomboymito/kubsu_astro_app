@@ -5,14 +5,17 @@ import pandas as pd
 from typing import Dict, Union
 import logging
 import tempfile
+from io import StringIO
 
 logger = logging.getLogger(__name__)
+
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 def parse_txt(file_content: str) -> Dict[str, np.ndarray]:
     """Парсит текстовый файл с данными кометы"""
     try:
-        # Чтение данных
-        data = pd.read_csv(file_content, delim_whitespace=True, comment='#')
+        # Чтение данных через StringIO
+        data = pd.read_csv(StringIO(file_content), delim_whitespace=True, comment='#')
         
         # Проверка на пустые данные
         if data.empty:
@@ -67,6 +70,10 @@ def parse_fits(file_path: str) -> Dict[str, np.ndarray]:
 async def parse_file(file: UploadFile) -> Dict[str, Union[np.ndarray, list]]:
     """Основная функция парсинга файлов"""
     try:
+        # Проверка размера файла
+        if file.size > MAX_FILE_SIZE:
+            raise ValueError(f"File size exceeds maximum limit of {MAX_FILE_SIZE//(1024*1024)} MB")
+
         content = await file.read()
         
         if not content:

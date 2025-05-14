@@ -25,6 +25,11 @@ class CalculationRequest(BaseModel):
     parameters: Dict[str, Any]
     file_data: Optional[Dict] = None
 
+class PlotDataResponse(BaseModel):
+    x: list
+    y: list
+    labels: Optional[Dict[str, Any]] = None
+
 @router.post("/calculate",
              summary="Выполнить астрономический расчет",
              response_description="Результаты расчета")
@@ -33,23 +38,14 @@ async def calculate_comet_data(
     calculation_type: str = Form(...),
     parameters: Optional[str] = Form(None),
 ):
-    """
-    Выполняет один из доступных астрономических расчетов:
-    - sublimation: Расчет температуры сублимации
-    - mass: Расчет массы кометы
-    - nucleus: Расчет диаметра ядра кометы
-    
-    Требуется либо файл с данными, либо параметры в JSON формате.
-    """
+    """Выполняет астрономические расчеты"""
     try:
-        # Проверка наличия входных данных
         if not file and not parameters:
             raise HTTPException(
                 status_code=400,
                 detail="Either file or parameters must be provided"
             )
 
-        # Парсинг параметров
         params_dict = {}
         if parameters:
             try:
@@ -62,7 +58,6 @@ async def calculate_comet_data(
                     detail=f"Invalid parameters JSON: {str(e)}"
                 )
 
-        # Парсинг файла
         file_data = None
         if file:
             if not file.filename:
@@ -72,7 +67,6 @@ async def calculate_comet_data(
                 )
             file_data = await parse_file(file)
 
-        # Валидация запроса
         try:
             request_data = CalculationRequest(
                 calculation_type=calculation_type,
@@ -85,7 +79,6 @@ async def calculate_comet_data(
                 detail=e.errors()
             )
 
-        # Выполнение расчета
         try:
             if request_data.calculation_type == "sublimation":
                 result = sublimation.calculate(
@@ -123,3 +116,19 @@ async def calculate_comet_data(
             status_code=500,
             detail="Internal server error"
         )
+
+@router.get("/plot_data",
+            summary="Получить данные для графиков",
+            response_model=PlotDataResponse)
+async def get_plot_data(dataset_id: str):
+    """Возвращает данные для построения графиков"""
+    try:
+        # Здесь должна быть реальная логика получения данных
+        return {
+            "x": [1, 2, 3, 4, 5],
+            "y": [10, 20, 15, 25, 30],
+            "labels": {"x": "Days", "y": "Magnitude"}
+        }
+    except Exception as e:
+        logger.error(f"Failed to get plot data: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
