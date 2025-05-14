@@ -11,25 +11,17 @@ class CppLoader:
         self._lib = None
         self._lib_ext = ".pyd" if platform.system() == "Windows" else ".so"
 
-    def load_library(self, lib_name: str) -> bool:
-        """Загружает C++ библиотеку с проверкой нескольких возможных путей"""
-        possible_paths = [
-            Path(__file__).parent / f"{lib_name}{self._lib_ext}",
-            Path(__file__).parent.parent / f"{lib_name}{self._lib_ext}",
-            Path(os.getcwd()) / f"{lib_name}{self._lib_ext}"
-        ]
-
-        for lib_path in possible_paths:
-            try:
-                if lib_path.exists():
-                    self._lib = ctypes.CDLL(str(lib_path))
-                    logger.info(f"Successfully loaded C++ library from {lib_path}")
-                    return True
-            except Exception as e:
-                logger.warning(f"Failed to load from {lib_path}: {str(e)}")
-
-        logger.error(f"Could not find library {lib_name} in any of: {possible_paths}")
-        return False
+    def load_library(self, lib_path: str) -> bool:
+    """Загружает библиотеку по полному пути"""
+        try:
+            lib_path = str(Path(lib_path).absolute())
+            self._lib = ctypes.CDLL(lib_path)
+            logger.info(f"Successfully loaded library: {lib_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to load library: {str(e)}")
+            self._lib = None
+            return False
 
     def get_function(self, func_name: str, argtypes: list, restype):
         """Получает функцию из загруженной библиотеки с проверками"""

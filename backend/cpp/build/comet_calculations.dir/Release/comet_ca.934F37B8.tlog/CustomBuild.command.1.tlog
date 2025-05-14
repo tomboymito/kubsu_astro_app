@@ -1,0 +1,10 @@
+^C:\USERS\MAXVL\REPOS\KUBSU_ASTRO_APP\BACKEND\CPP\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/maxvl/repos/kubsu_astro_app/backend/cpp -BC:/Users/maxvl/repos/kubsu_astro_app/backend/cpp/build --check-stamp-file C:/Users/maxvl/repos/kubsu_astro_app/backend/cpp/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

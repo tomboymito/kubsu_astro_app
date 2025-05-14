@@ -33,7 +33,8 @@ target_include_directories(comet_calculations PRIVATE
 
 # 3. Исправлена опечатка в PROPERTIES (было PROPERTIES)
 # Настройка выходного каталога
-set(OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../app/core/calculations)
+# В файле backend/cpp/CMakeLists.txt измените:
+set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/backend/app/core/calculations")
 file(MAKE_DIRECTORY ${OUTPUT_DIR})
 
 # Платформо-зависимые настройки
