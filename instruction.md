@@ -1,23 +1,35 @@
-# 1
-Откройте PowerShell от имени администратора
-
-# 2
-Выполните команду:
-
+## 1
 ```powershell
-cd C:\Users\maxvl\repos\kubsu_astro_app
+cd C:\Users\m8906\repos\kubsu_astro_app
 ```
 
+## 2
 ```powershell
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-.\build_and_test.ps1
+python -m venv venv
 ```
 
+## 3
 ```powershell
-cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+python.exe -m pip install --upgrade pip
+```
+
+## 4
+В корне проекта, также в app/backend и app/frontend
+```powershell
+pip install -r requirements.txt
+```
+## 5
+```powershell
+mkdir build
+cd build
+```
+## 6
+```powershell
+cmake ..
 cmake --build . --config Release
 ```
 
-```
-python.exe -m pip install --upgrade pip
+## 7
+```powershell
+powershell .\run_all.ps1
 ```
