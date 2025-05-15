@@ -1,6 +1,6 @@
 ## 1
 ```powershell
-cd C:\Users\m8906\repos\kubsu_astro_app
+cd C:\Users\Polin\repos\kubsu_astro_app
 ```
 
 ## 2

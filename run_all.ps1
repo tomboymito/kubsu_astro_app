@@ -27,7 +27,7 @@ Write-Host "Starting backend server (logs in logs/backend_*.log)..."
 $backendJob = Start-Job -ScriptBlock {
     $env:PYTHONUNBUFFERED = "1"
     Set-Location $using:PWD
-    & python -m uvicorn app.backend.main:app --port 8000 --host 0.0.0.0 1>logs/backend_out.log 2>logs/backend_error.log
+    & python -m uvicorn application.backend.main:app --port 8000 --host 0.0.0.0 1>logs/backend_out.log 2>logs/backend_error.log
 }
 
 # Ожидание с увеличенным таймаутом
@@ -57,7 +57,7 @@ if ($attempts -ge 20) {
 # Запуск frontend
 Write-Host "Starting frontend application..."
 try {
-    $frontendProcess = Start-Process -NoNewWindow -PassThru -FilePath "python" -ArgumentList "app/frontend/front_v2.py"
+    $frontendProcess = Start-Process -NoNewWindow -PassThru -FilePath "python" -ArgumentList "application/frontend/front_v2.py"
     Wait-Process -Id $frontendProcess.Id
     Write-Host "Frontend closed"
 } finally {
