@@ -1,4 +1,5 @@
 import os
+import sys
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -13,6 +14,15 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib as mpl
+
+def resource_path(relative_path):
+    """ Получает абсолютный путь к ресурсу, работает для dev и для PyInstaller """
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
 
 class CustomNavigationToolbar(NavigationToolbar):
     toolitems = [t for t in NavigationToolbar.toolitems if
@@ -64,7 +74,7 @@ class HelpWindow(QMainWindow):
         
         background = QLabel(central_widget)
         background.setScaledContents(True)
-        pixmap = QPixmap(os.path.join("data", "bg.jpeg"))
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
         if not pixmap.isNull():
             background.setPixmap(pixmap)
         else:
@@ -903,7 +913,7 @@ class MainWindow(QMainWindow):
 
         background = QLabel(central_widget)
         background.setScaledContents(True)
-        pixmap = QPixmap(os.path.join("data", "bg.jpeg"))
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
         background.setPixmap(pixmap)
         background.setGeometry(0, 0, self.width(), self.height())
         background.lower()
