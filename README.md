@@ -9,7 +9,12 @@ pip install -r requirements.txt
 ## 3. Запустить приложение
 Перейти к файлу "app/main.py" и запустить его
 
-## 4. Создать файл .exe
+## 4. Скачать PyInstaller
+```
+pip install PyInstaller
+```
+
+## 5. Создать файл .exe
 ```
 python -m PyInstaller KUBSU_Astro_App.spec
 ```
