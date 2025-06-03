@@ -64,7 +64,7 @@ class HelpWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Справка")
-        self.setFixedSize(900, 700)
+        self.setFixedSize(1100, 900)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -249,15 +249,14 @@ class SublimationTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
-    
+
     def setup_ui(self):
         self.setStyleSheet("background-color: #0b0b47; border: none")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(1)
-
-        input_frame = QFrame()
-        input_frame.setStyleSheet("""
+        
+        params_frame = QFrame()
+        params_frame.setStyleSheet("""
             QFrame {
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
@@ -265,62 +264,60 @@ class SublimationTab(QWidget):
                 padding: 2px;
             }
         """)
-        input_layout = QVBoxLayout(input_frame)
-        input_layout.setSpacing(1)
-
-        input_title = QLabel("Входные параметры:")
-        input_title.setStyleSheet("""
-            QLabel {
-                font-weight: bold;
-                font-size: 16px;
-                color: white;
-                padding-bottom: 0px;
-            }
-        """)
-        input_title.setAlignment(Qt.AlignCenter)
-        input_layout.addWidget(input_title)
-
+        params_layout = QVBoxLayout(params_frame)
+        
         self.input_params = {
             'T': QLineEdit(),
             'r0': QLineEdit(),
             'r_earth': QLineEdit()
         }
-
-        for param in self.input_params.values():
-            param.setMinimumHeight(30)
-            param.setStyleSheet("""
-                QLineEdit {
-                    background-color: white;
-                    border-radius: 5px;
-                    color: #000034;
-                    padding: 0px;
-                    font-size: 12px;
-                    min-height: 30px;
-                }
-            """)
-
-        input_layout.addWidget(self.create_param_row("Температура (T) [K]:", self.input_params['T']))
-        input_layout.addWidget(self.create_param_row("Расстояние от звезды (r0) [a.e.]:", self.input_params['r0']))
-        input_layout.addWidget(self.create_param_row("Расстояние от Земли (r⊕) [км или R⊕]:", self.input_params['r_earth']))
         
-        layout.addWidget(input_frame)
-
-        self.calc_btn = QPushButton("Рассчитать сублимацию")
+        title_label = QLabel("Параметры для определения сублимирующих элементов:")
+        title_label.setStyleSheet("""
+            QLabel {
+                font-weight: bold;
+                font-size: 16px;
+                color: white;
+                border: none;
+                padding: 5px;
+            }
+        """)
+        title_label.setAlignment(Qt.AlignCenter)
+        params_layout.addWidget(title_label)
+        
+        param_label_style = """
+            QLabel {
+                font-weight: bold;
+                font-size: 14px;
+                color: white;
+                border: 2px solid #aaaaaa;
+                border-radius: 7px;
+                padding: 5px;
+                background-color: #0b0b47;
+            }
+        """
+        
+        params_layout.addWidget(self.create_param_row("Температура (T) [K]:", self.input_params['T'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Расстояние от звезды (r0) [a.e.]:", self.input_params['r0'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Расстояние от Земли (r⊕) [км или R⊕]:", self.input_params['r_earth'], param_label_style))
+        
+        layout.addWidget(params_frame)
+        
+        self.calc_btn = QPushButton("Определить сублимирующие элементы")
         self.calc_btn.setStyleSheet("""
             QPushButton {
                 background-color: white;
                 border-radius: 20px;
                 color: #000034;
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: bold;
-                padding: 12px;
-                min-height: 40px;
+                padding: 10px;
             }
             QPushButton:hover {
                 background-color: #aaccff;
             }
         """)
-        layout.addWidget(self.calc_btn, 0, Qt.AlignTop)
+        layout.addWidget(self.calc_btn)
         
         self.result_label = QLabel("Результат:")
         self.result_label.setStyleSheet("""
@@ -328,11 +325,10 @@ class SublimationTab(QWidget):
                 color: white;
                 font-size: 16px;
                 font-weight: bold;
-                padding-top: 10px;
             }
         """)
         layout.addWidget(self.result_label)
-
+        
         self.result_text = QTextEdit()
         self.result_text.setReadOnly(True)
         self.result_text.setStyleSheet("""
@@ -340,13 +336,10 @@ class SublimationTab(QWidget):
                 background-color: white;
                 border-radius: 10px;
                 color: #000034;
-                font-family: Arial;
-                font-size: 14px;
-                padding: 10px;
-                min-height: 100px;
+                font-family: Consolas;
             }
         """)
-        layout.addWidget(self.result_text, 1)
+        layout.addWidget(self.result_text)
     
     def create_param_row(self, label_text, input_widget, label_style=""):
         row_widget = QWidget()
@@ -367,21 +360,21 @@ class SublimationTab(QWidget):
             """)
         label.setWordWrap(True)
         
-        input_widget.setMinimumHeight(30)
+        input_widget.setFixedSize(150, 30)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
-                border: 1px solid #aaaaaa;
+                border: 2px solid #aaaaaa;
                 border-radius: 5px;
                 color: white;
                 padding: 5px;
                 font-size: 14px;
             }
             QLineEdit:hover {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
             QLineEdit:focus {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
         """)
         
@@ -439,7 +432,7 @@ class GraphTab(QWidget):
             QListView {
                 background-color: white;
                 border-radius: 10px;
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
             QListView::item:selected {
                 background-color: #aaccff;
@@ -450,7 +443,7 @@ class GraphTab(QWidget):
         self.graph_type.setStyleSheet("""
             QComboBox {
                 background-color: white;
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
                 border-radius: 10px;
                 padding: 5px 25px 5px 10px;
                 color: #000034;
@@ -469,7 +462,7 @@ class GraphTab(QWidget):
                 subcontrol-origin: padding;
                 subcontrol-position: top right;
                 width: 20px;
-                border-left: 1px solid #5f8bff;
+                border-left: 2px solid #5f8bff;
                 border-top-right-radius: 9px;
                 border-bottom-right-radius: 9px;
             }
@@ -600,21 +593,21 @@ class GraphTab(QWidget):
             """)
         label.setWordWrap(True)
         
-        input_widget.setMinimumHeight(30)
+        input_widget.setFixedSize(150, 30)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
-                border: 1px solid #aaaaaa;
+                border: 2px solid #aaaaaa;
                 border-radius: 5px;
                 color: white;
                 padding: 5px;
                 font-size: 14px;
             }
             QLineEdit:hover {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
             QLineEdit:focus {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
         """)
         
@@ -639,11 +632,12 @@ class MassTab(QWidget):
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
                 border-radius: 10px;
+                padding: 2px;
             }
         """)
         params_layout = QVBoxLayout(params_frame)
         
-        title_label = QLabel("Параметры для расчета массы кометы:")
+        title_label = QLabel("Параметры для расчета массы пыли, выделяемую кометой:")
         title_label.setStyleSheet("""
             QLabel {
                 font-weight: bold;
@@ -676,14 +670,14 @@ class MassTab(QWidget):
         
         params_layout.addWidget(self.create_param_row("Видимая звездная величина кометы (m_k):", 
                                                    self.mass_params['m_k'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Δ:", 
+        params_layout.addWidget(self.create_param_row("Расстояние (Δ):", 
                                                    self.mass_params['delta'], param_label_style))
-        params_layout.addWidget(self.create_param_row("r:", 
+        params_layout.addWidget(self.create_param_row("Радиус (r):", 
                                                    self.mass_params['r'], param_label_style))
         
         layout.addWidget(params_frame)
         
-        self.calc_btn = QPushButton("Рассчитать массу кометы")
+        self.calc_btn = QPushButton("Рассчитать массу пыли, выделяемую кометы")
         self.calc_btn.setStyleSheet("""
             QPushButton {
                 background-color: white;
@@ -740,21 +734,21 @@ class MassTab(QWidget):
             """)
         label.setWordWrap(True)
         
-        input_widget.setMinimumHeight(30)
+        input_widget.setFixedSize(150, 30)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
-                border: 1px solid #aaaaaa;
+                border: 2px solid #aaaaaa;
                 border-radius: 5px;
                 color: white;
                 padding: 5px;
                 font-size: 14px;
             }
             QLineEdit:hover {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
             QLineEdit:focus {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
         """)
         
@@ -779,6 +773,7 @@ class SizeTab(QWidget):
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
                 border-radius: 10px;
+                padding: 2px;
             }
         """)
         params_layout = QVBoxLayout(params_frame)
@@ -877,21 +872,21 @@ class SizeTab(QWidget):
             """)
         label.setWordWrap(True)
         
-        input_widget.setMinimumHeight(30)
+        input_widget.setFixedSize(150, 30)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
-                border: 1px solid #aaaaaa;
+                border: 2px solid #aaaaaa;
                 border-radius: 5px;
                 color: white;
                 padding: 5px;
                 font-size: 14px;
             }
             QLineEdit:hover {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
             QLineEdit:focus {
-                border: 1px solid #5f8bff;
+                border: 2px solid #5f8bff;
             }
         """)
         
@@ -904,7 +899,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("KUBSU Astro App")
-        self.setFixedSize(1000, 1000)
+        self.setFixedSize(1100, 900)
         self.setup_ui()
     
     def setup_ui(self):
@@ -987,7 +982,7 @@ class MainWindow(QMainWindow):
         buttons = [
             ("Сублимация", "sublimation"),
             ("Графики", "graphs"),
-            ("Масса кометы", "mass"),
+            ("Масса пыли", "mass"),
             ("Размер ядра", "size")
         ]
 

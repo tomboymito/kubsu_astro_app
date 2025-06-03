@@ -70,7 +70,7 @@ class MainController:
         if 'delta' in self.data:
             self.view.tabs["graphs"].graph_params['delta'].setText(str(self.data['delta']))
         
-        # Вкладка "Масса кометы"
+        # Вкладка "Масса пыли"
         if 'm_k' in self.data:
             self.view.tabs["mass"].mass_params['m_k'].setText(str(self.data['m_k']))
         if 'delta' in self.data:
