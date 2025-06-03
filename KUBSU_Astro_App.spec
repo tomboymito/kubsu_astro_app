@@ -3,12 +3,12 @@
 block_cipher = None
 
 a = Analysis(
-    ['app/main.py'],
+    ['src/app/main.py'],
     pathex=[],
     binaries=[],
     datas=[
-        ('icons/*', 'icons'),
-        ('data/*', 'data')
+        ('src/icons/*', 'icons'),
+        ('src.data/*', 'data')
     ],
     hiddenimports=[],
     hookspath=['.'],
@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='KUBSU_Astro_App',
+    name='KUBSU Astro App',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -36,5 +36,5 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,
-    icon='icons/app_icon.ico'  # Укажите путь к иконке приложения
+    icon='src/icons/app_icon.ico'
 )
