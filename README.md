@@ -1,20 +1,46 @@
+### | Создание .exe и запуск приложения |
+
+## *при создании .exe следует отредактировать файл 'app/main.py'*
+```app/main.py
+import sys
+from PyQt5.QtWidgets import QApplication
+from app.views import MainWindow
+from app.controllers import MainController
+from app.models import SublimationModel, GraphModel, MassModel, SizeModel
+```
+
 ## 1. Уставноить requirements.txt
 ```
 pip install -r requirements.txt
 ```
 
-## 2. Создать файл с раширением .fits для теста программы
-Перейти к файлу "app/fits.py" и запустить его
-
-## 3. Запустить приложение
-Перейти к файлу "app/main.py" и запустить его
-
-## 4. Скачать PyInstaller
+## 2. Скачать PyInstaller
 ```
 pip install PyInstaller
 ```
 
-## 5. Создать файл .exe
+## 3. Создать файл .exe
 ```
 python -m PyInstaller KUBSU_Astro_App.spec
+```
+
+### | Запуск приложения для теста |
+
+## *при запуске приложения для теста следует отредактировать файл 'app/main.py'*
+```app/main.py
+import sys
+from PyQt5.QtWidgets import QApplication
+from views import MainWindow
+from controllers import MainController
+from models import SublimationModel, GraphModel, MassModel, SizeModel
+```
+
+## 1. Уставноить requirements.txt
+```
+pip install -r requirements.txt
+```
+
+## 2. Запустить 'app/main.py'
+```
+python app/main.py
 ```
