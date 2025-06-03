@@ -1,6 +1,6 @@
-### | Создание .exe и запуск приложения |
+# **| Создание .exe и запуск приложения |**
 
-## *при создании .exe следует отредактировать файл 'app/main.py'*
+### *при создании .exe следует отредактировать файл 'app/main.py'*
 ```app/main.py
 import sys
 from PyQt5.QtWidgets import QApplication
@@ -24,9 +24,9 @@ pip install PyInstaller
 python -m PyInstaller KUBSU_Astro_App.spec
 ```
 
-### | Запуск приложения для теста |
+# **| Запуск приложения для теста |**
 
-## *при запуске приложения для теста следует отредактировать файл 'app/main.py'*
+### *при запуске приложения для теста следует отредактировать файл 'app/main.py'*
 ```app/main.py
 import sys
 from PyQt5.QtWidgets import QApplication
