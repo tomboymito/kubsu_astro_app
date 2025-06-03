@@ -187,14 +187,30 @@ class SublimationModel:
             return {"error": f"Ошибка расчёта: {str(e)}"}
 
     def load_txt_data(self, file_path):
+        key_map_txt = {
+            'T': 'T',
+            'R0': 'r0',
+            'REARTH': 'r_earth',
+            'AFRHO0': 'Afρ0',
+            'K': 'k',
+            'H': 'H',
+            'N': 'n',
+            'DELTA': 'delta',
+            'MK': 'm_k',
+            'R': 'r',
+            'PV': 'pv',
+            'ANGSIZE': 'angular_size'
+        }
         with open(file_path, 'r') as f:
             for line in f:
                 if '=' in line:
                     key, value = line.strip().split('=')
-                    self.data[key.strip()] = float(value.strip())
+                    original_key = key.strip()
+                    mapped_key = key_map_txt.get(original_key, original_key)
+                    self.data[mapped_key] = float(value.strip())
 
     def load_fits_data(self, file_path):
-        key_map = {
+        key_map_fits = {
             'T': 'T',
             'R0': 'r0',
             'REARTH': 'r_earth',
@@ -214,7 +230,7 @@ class SublimationModel:
                 if hasattr(hdu, 'header'):
                     for key, value in hdu.header.items():
                         if isinstance(value, (int, float)):
-                            std_key = key_map.get(key, key)
+                            std_key = key_map_fits.get(key, key)
                             self.data[std_key] = value
 
 class GraphModel:

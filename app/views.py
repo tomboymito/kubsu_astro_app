@@ -262,7 +262,7 @@ class SublimationTab(QWidget):
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
                 border-radius: 10px;
-                padding: 0px;
+                padding: 2px;
             }
         """)
         input_layout = QVBoxLayout(input_frame)

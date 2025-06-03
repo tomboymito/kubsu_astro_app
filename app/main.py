@@ -1,8 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from app.views import MainWindow
-from app.controllers import MainController
-from app.models import SublimationModel, GraphModel, MassModel, SizeModel
+from views import MainWindow
+from controllers import MainController
+from models import SublimationModel, GraphModel, MassModel, SizeModel
 
 def main():
     app = QApplication(sys.argv)
