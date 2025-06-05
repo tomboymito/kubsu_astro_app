@@ -74,7 +74,7 @@ class HelpWindow(QMainWindow):
         
         background = QLabel(central_widget)
         background.setScaledContents(True)
-        pixmap = QPixmap(resource_path("src/data/bg.jpeg"))
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
         if not pixmap.isNull():
             background.setPixmap(pixmap)
         else:
@@ -908,7 +908,7 @@ class MainWindow(QMainWindow):
 
         background = QLabel(central_widget)
         background.setScaledContents(True)
-        pixmap = QPixmap(resource_path("src/data/bg.jpeg"))
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
         background.setPixmap(pixmap)
         background.setGeometry(0, 0, self.width(), self.height())
         background.lower()
