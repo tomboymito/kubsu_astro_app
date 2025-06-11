@@ -245,6 +245,19 @@ class GraphModel:
             H = float(params['H'])
             n = float(params['n'])
             delta = float(params['delta'])
+            x_vals = params.get('x_vals')
+            y_vals = params.get('y_vals')
+
+            if isinstance(x_vals, np.ndarray) and isinstance(y_vals, np.ndarray):
+                return {
+                    "x": x_vals,
+                    "y": y_vals,
+                    "xlabel": "X",
+                    "ylabel": "Y",
+                    "title": "График по заданным точкам",
+                    "invert_y": False,
+                    "points": True,
+                }
 
             if graph_type == "Afρ от расстояния":
                 r = np.linspace(0.1, 5, 100)

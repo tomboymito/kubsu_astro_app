@@ -545,6 +545,22 @@ class GraphTab(QWidget):
         params_layout.addWidget(self.create_param_row("Абсолютная звездная величина (H):", self.graph_params['H'], param_label_style))
         params_layout.addWidget(self.create_param_row("Показатель n:", self.graph_params['n'], param_label_style))
         params_layout.addWidget(self.create_param_row("Δ:", self.graph_params['delta'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Значения X (через пробел/запятую):", self.graph_params['x_points'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Значения Y (через пробел/запятую):", self.graph_params['y_points'], param_label_style))
+        self.load_points_btn = QPushButton("Загрузить точки из файла")
+        self.load_points_btn.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                border-radius: 15px;
+                color: #000034;
+                font-size: 14px;
+                padding: 5px 10px;
+            }
+            QPushButton:hover {
+                background-color: #aaccff;
+            }
+        """)
+        params_layout.addWidget(self.load_points_btn)
 
         layout.addWidget(params_frame)
 

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from point_manager import PointManager
 from astropy.io import fits
+from point_manager import PointManager
 
 class MainController:
     def __init__(self, models, view):
@@ -114,7 +114,7 @@ class MainController:
             'k': tab.graph_params['k'].text(),
             'H': tab.graph_params['H'].text(),
             'n': tab.graph_params['n'].text(),
-            'delta': tab.graph_params['delta'].text()
+            'delta': tab.graph_params['delta'].text(),
         }
         if ok:
             params['x_vals'] = self.point_manager.x
