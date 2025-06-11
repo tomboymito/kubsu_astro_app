@@ -248,32 +248,34 @@ class GraphModel:
 
             if graph_type == "Afρ от расстояния":
                 r = np.linspace(0.1, 5, 100)
-                Afρ = Afρ0 * (r / r0) ** k
-                return {"x": r, "y": Afρ, "xlabel": "Расстояние от Солнца (а.е.)", 
-                        "ylabel": "Afρ", "title": "Зависимость Afρ от расстояния", "invert_y": False}
+                Afρ = Afρ0 * (r / r0) ** (-k)
+                return {"x": r, "y": Afρ, "xlabel": "Расстояние от Солнца (а.е.)",
+                        "ylabel": "Afρ", "title": "Зависимость Afρ от расстояния",
+                        "invert_y": False, "points": False}
             
             elif graph_type == "Звездной величины от расстояния":
                 r = np.linspace(0.1, 5, 100)
                 m = H + 5 * np.log10(delta) + 2.5 * n * np.log10(r)
-                return {"x": r, "y": m, "xlabel": "Расстояние от Солнца (а.е.)", 
-                        "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от расстояния", 
-                        "invert_y": True}
+                return {"x": r, "y": m, "xlabel": "Расстояние от Солнца (а.е.)",
+                        "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от расстояния",
+                        "invert_y": True, "points": False}
                 
             elif graph_type == "Afρ от даты":
                 t = np.linspace(-50, 50, 100)
                 t0 = 0
                 tau = 10
-                Afρ = Afρ0 * np.exp(-(t - t0)**2 / (2 * tau**2))
-                return {"x": t, "y": Afρ, "xlabel": "Время (дни)", 
-                        "ylabel": "Afρ", "title": "Зависимость Afρ от времени", "invert_y": False}
+                Afρ = Afρ0 * np.exp(-(t - t0) ** 2 / (2 * tau ** 2))
+                return {"x": t, "y": Afρ, "xlabel": "Время (дни)",
+                        "ylabel": "Afρ", "title": "Зависимость Afρ от времени",
+                        "invert_y": False, "points": False}
                 
             elif graph_type == "Звездной величины от даты":
                 t = np.linspace(-50, 50, 100)
-                r = r0 + 0.01 * t
+                r = np.clip(r0 + 0.01 * t, 1e-3, None)
                 m = H + 5 * np.log10(delta) + 2.5 * n * np.log10(r)
-                return {"x": t, "y": m, "xlabel": "Время (дни)", 
-                        "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от времени", 
-                        "invert_y": True}
+                return {"x": t, "y": m, "xlabel": "Время (дни)",
+                        "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от времени",
+                        "invert_y": True, "points": False}
 
         except ValueError as e:
             return {"error": "Пожалуйста, проверьте введенные данные"}

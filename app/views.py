@@ -4,10 +4,24 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-from PyQt5.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                            QLabel, QPushButton, QLineEdit, QFrame, QMessageBox,
-                            QScrollArea, QTextEdit, QListView, QFileDialog,
-                            QComboBox)
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QFrame,
+    QMessageBox,
+    QScrollArea,
+    QTextEdit,
+    QListView,
+    QFileDialog,
+    QComboBox,
+    QTableWidget,
+    QTableWidgetItem,
+)
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap, QFont, QColor
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -182,7 +196,7 @@ class HelpWindow(QMainWindow):
                 <h3 style='text-align: left;'>Вкладка 2. Графики. Формулы.</h3>
                 <p><b>Зависимость от расстояния:</b></p>
                 <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>k</sup> 
+                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>-k</sup>
                 </div>
                 <p><b>Звездная величина:</b></p>
                 <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
@@ -380,8 +394,9 @@ class SublimationTab(QWidget):
         
         row_layout.addWidget(label, 1)
         row_layout.addWidget(input_widget, 2)
-        
+
         return row_widget
+
 
 class GraphTab(QWidget):
     def __init__(self, parent=None):
@@ -494,7 +509,9 @@ class GraphTab(QWidget):
             'k': QLineEdit(),
             'H': QLineEdit(),
             'n': QLineEdit(),
-            'delta': QLineEdit()
+            'delta': QLineEdit(),
+            'x_points': QLineEdit(),
+            'y_points': QLineEdit()
         }
 
         params_title = QLabel("Параметры для графиков:")
@@ -530,6 +547,14 @@ class GraphTab(QWidget):
         params_layout.addWidget(self.create_param_row("Δ:", self.graph_params['delta'], param_label_style))
 
         layout.addWidget(params_frame)
+
+        self.points_table = QTableWidget()
+        self.points_table.setColumnCount(2)
+        self.points_table.setHorizontalHeaderLabels(["X", "Y"])
+        self.points_table.horizontalHeader().setStretchLastSection(True)
+        self.points_table.setStyleSheet("background-color: white; color: #000034;")
+        self.points_table.setMinimumHeight(150)
+        layout.addWidget(self.points_table)
 
         self.plot_btn = QPushButton("Построить график")
         self.plot_btn.setStyleSheet("""
@@ -615,6 +640,32 @@ class GraphTab(QWidget):
         row_layout.addWidget(input_widget, 2)
         
         return row_widget
+
+    def set_points(self, x_vals, y_vals):
+        self.points_table.setRowCount(0)
+        for xv, yv in zip(x_vals, y_vals):
+            row = self.points_table.rowCount()
+            self.points_table.insertRow(row)
+            self.points_table.setItem(row, 0, QTableWidgetItem(str(xv)))
+            self.points_table.setItem(row, 1, QTableWidgetItem(str(yv)))
+        self.graph_params['x_points'].setText(' '.join(str(v) for v in x_vals))
+        self.graph_params['y_points'].setText(' '.join(str(v) for v in y_vals))
+
+    def get_point_texts(self):
+        if self.points_table.rowCount() > 0:
+            xs = []
+            ys = []
+            for row in range(self.points_table.rowCount()):
+                x_item = self.points_table.item(row, 0)
+                y_item = self.points_table.item(row, 1)
+                if x_item and y_item:
+                    xs.append(x_item.text())
+                    ys.append(y_item.text())
+            return ' '.join(xs), ' '.join(ys)
+        return (
+            self.graph_params['x_points'].text(),
+            self.graph_params['y_points'].text(),
+        )
 
 class MassTab(QWidget):
     def __init__(self, parent=None):
