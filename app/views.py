@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QTableWidget,
     QTableWidgetItem,
+    QSizePolicy,
 )
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap, QFont, QColor
@@ -78,7 +79,7 @@ class HelpWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Справка")
-        self.setFixedSize(1100, 900)
+        self.setMinimumSize(1100, 900)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -86,15 +87,15 @@ class HelpWindow(QMainWindow):
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
         
-        background = QLabel(central_widget)
-        background.setScaledContents(True)
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
         pixmap = QPixmap(resource_path("data/bg.jpeg"))
         if not pixmap.isNull():
-            background.setPixmap(pixmap)
+            self.background.setPixmap(pixmap)
         else:
-            background.setStyleSheet("background-color: #0b0b47;")
-        background.setGeometry(0, 0, self.width(), self.height())
-        background.lower()
+            self.background.setStyleSheet("background-color: #0b0b47;")
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
         
         content_container = QWidget()
         content_container.setStyleSheet("background: transparent;")
@@ -258,6 +259,11 @@ class HelpWindow(QMainWindow):
         """)
         self.close_btn.clicked.connect(self.close)
         inner_layout.addWidget(self.close_btn, 0, Qt.AlignBottom | Qt.AlignHCenter)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, 'background'):
+            self.background.setGeometry(0, 0, self.width(), self.height())
 
 class SublimationTab(QWidget):
     def __init__(self, parent=None):
@@ -601,6 +607,7 @@ class GraphTab(QWidget):
 
         self.figure = Figure(facecolor='#0b0b47')
         self.canvas = FigureCanvas(self.figure)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.ax = self.figure.add_subplot(111)
         self.ax.set_facecolor('#0b0b47')
 
@@ -966,19 +973,19 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("KUBSU Astro App")
-        self.setFixedSize(1100, 900)
+        self.setMinimumSize(1100, 900)
         self.setup_ui()
     
     def setup_ui(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        background = QLabel(central_widget)
-        background.setScaledContents(True)
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
         pixmap = QPixmap(resource_path("data/bg.jpeg"))
-        background.setPixmap(pixmap)
-        background.setGeometry(0, 0, self.width(), self.height())
-        background.lower()
+        self.background.setPixmap(pixmap)
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
         
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(70, 40, 70, 70)
@@ -1142,3 +1149,10 @@ class MainWindow(QMainWindow):
     def show_help(self):
         self.help_window = HelpWindow(self)
         self.help_window.show()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, 'background'):
+            self.background.setGeometry(0, 0, self.width(), self.height())
+
+
