@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from astropy.io import fits
 from point_manager import PointManager
+from views import GraphWindow
+from astropy.io import fits
 
 class MainController:
     def __init__(self, models, view):
@@ -122,24 +123,27 @@ class MainController:
         elif x_text or y_text:
             QMessageBox.warning(self.view, "Ошибка", msg)
             return
+
         graph_type = tab.graph_type.currentText()
         
         result = self.models['graph'].plot_graph(params, graph_type)
-
+        
         if 'error' in result:
             QMessageBox.warning(self.view, "Ошибка", result['error'])
         else:
-            tab.ax.clear()
-            tab.ax.plot(result['x'], result['y'], color="blue")
+            window = GraphWindow(self.view)
+            window.ax.clear()
+            window.ax.plot(result['x'], result['y'], color="blue")
             if result.get('points'):
-                tab.ax.scatter(result['x'], result['y'], color="red", zorder=3)
-            tab.ax.set_xlabel(result['xlabel'])
-            tab.ax.set_ylabel(result['ylabel'])
-            tab.ax.set_title(result['title'])
+                window.ax.scatter(result['x'], result['y'], color="red", zorder=3)
+            window.ax.set_xlabel(result['xlabel'])
+            window.ax.set_ylabel(result['ylabel'])
+            window.ax.set_title(result['title'])
             if result['invert_y']:
-                tab.ax.invert_yaxis()
-            tab.canvas.draw()
-
+                window.ax.invert_yaxis()
+            window.canvas.draw()
+            window.show()
+    
     def load_points(self):
         file_path, _ = QFileDialog.getOpenFileName(
             self.view, "Открыть файл с точками", "", "Text/CSV Files (*.txt *.csv)"
@@ -152,7 +156,7 @@ class MainController:
             return
         tab = self.view.tabs["graphs"]
         tab.set_points(self.point_manager.x, self.point_manager.y)
-    
+
     def calculate_mass(self):
         tab = self.view.tabs["mass"]
         params = {

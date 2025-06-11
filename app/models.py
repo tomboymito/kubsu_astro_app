@@ -290,6 +290,7 @@ class GraphModel:
                         "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от времени",
                         "invert_y": True, "points": False}
 
+
         except ValueError as e:
             return {"error": "Пожалуйста, проверьте введенные данные"}
         except Exception as e:

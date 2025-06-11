@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QTableWidget,
     QTableWidgetItem,
+    QSizePolicy,
 )
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap, QFont, QColor
@@ -196,7 +197,7 @@ class HelpWindow(QMainWindow):
                 <h3 style='text-align: left;'>Вкладка 2. Графики. Формулы.</h3>
                 <p><b>Зависимость от расстояния:</b></p>
                 <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>-k</sup>
+                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>-k</sup> 
                 </div>
                 <p><b>Звездная величина:</b></p>
                 <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
@@ -394,13 +395,70 @@ class SublimationTab(QWidget):
         
         row_layout.addWidget(label, 1)
         row_layout.addWidget(input_widget, 2)
-
+        
         return row_widget
 
+class GraphWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("График")
+        self.setMinimumSize(1100, 900)
+
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
+        if not pixmap.isNull():
+            self.background.setPixmap(pixmap)
+        else:
+            self.background.setStyleSheet("background-color: #0b0b47;")
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
+
+        graph_container = QFrame()
+        graph_container.setStyleSheet(
+            """
+            QFrame {
+                background-color: white;
+                border-radius: 15px;
+                border: none;
+            }
+            """
+        )
+        graph_layout = QVBoxLayout(graph_container)
+        graph_layout.setContentsMargins(10, 10, 10, 10)
+
+        self.figure = Figure(facecolor="#0b0b47")
+        self.canvas = FigureCanvas(self.figure)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_facecolor("#0b0b47")
+
+        self.ax.tick_params(colors="white")
+        self.ax.xaxis.label.set_color("white")
+        self.ax.yaxis.label.set_color("white")
+        self.ax.title.set_color("white")
+
+        self.toolbar = CustomNavigationToolbar(self.canvas, self)
+
+        graph_layout.addWidget(self.toolbar)
+        graph_layout.addWidget(self.canvas)
+        main_layout.addWidget(graph_container)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "background"):
+            self.background.setGeometry(0, 0, self.width(), self.height())
 
 class GraphTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.graph_window = None
         self.setup_ui()
     
     def setup_ui(self):
@@ -587,33 +645,6 @@ class GraphTab(QWidget):
             }
         """)
         layout.addWidget(self.plot_btn)
-
-        graph_container = QFrame()
-        graph_container.setStyleSheet("""
-            QFrame {
-                background-color: white;
-                border-radius: 15px;
-                border: none;
-            }
-        """)
-        graph_layout = QVBoxLayout(graph_container)
-        graph_layout.setContentsMargins(10, 10, 10, 10)
-
-        self.figure = Figure(facecolor='#0b0b47')
-        self.canvas = FigureCanvas(self.figure)
-        self.ax = self.figure.add_subplot(111)
-        self.ax.set_facecolor('#0b0b47')
-
-        self.ax.tick_params(colors='white')
-        self.ax.xaxis.label.set_color('white')
-        self.ax.yaxis.label.set_color('white')
-        self.ax.title.set_color('white')
-
-        self.toolbar = CustomNavigationToolbar(self.canvas, self)
-
-        graph_layout.addWidget(self.toolbar)
-        graph_layout.addWidget(self.canvas)
-        layout.addWidget(graph_container, 1)
     
     def create_param_row(self, label_text, input_widget, label_style=""):
         row_widget = QWidget()
@@ -656,7 +687,7 @@ class GraphTab(QWidget):
         row_layout.addWidget(input_widget, 2)
         
         return row_widget
-
+    
     def set_points(self, x_vals, y_vals):
         self.points_table.setRowCount(0)
         for xv, yv in zip(x_vals, y_vals):
@@ -966,19 +997,21 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("KUBSU Astro App")
-        self.setFixedSize(1100, 900)
+        self.setMinimumSize(1100, 900)
         self.setup_ui()
     
     def setup_ui(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        background = QLabel(central_widget)
-        background.setScaledContents(True)
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
+
         pixmap = QPixmap(resource_path("data/bg.jpeg"))
-        background.setPixmap(pixmap)
-        background.setGeometry(0, 0, self.width(), self.height())
-        background.lower()
+
+        self.background.setPixmap(pixmap)
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
         
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(70, 40, 70, 70)
@@ -1142,3 +1175,8 @@ class MainWindow(QMainWindow):
     def show_help(self):
         self.help_window = HelpWindow(self)
         self.help_window.show()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, 'background'):
+            self.background.setGeometry(0, 0, self.width(), self.height())
