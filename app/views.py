@@ -4,10 +4,25 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-from PyQt5.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                            QLabel, QPushButton, QLineEdit, QFrame, QMessageBox,
-                            QScrollArea, QTextEdit, QListView, QFileDialog,
-                            QComboBox)
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QFrame,
+    QMessageBox,
+    QScrollArea,
+    QTextEdit,
+    QListView,
+    QFileDialog,
+    QComboBox,
+    QTableWidget,
+    QTableWidgetItem,
+    QSizePolicy,
+)
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap, QFont, QColor
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -64,7 +79,7 @@ class HelpWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Справка")
-        self.setFixedSize(1100, 900)
+        self.setMinimumSize(1100, 900)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -72,15 +87,15 @@ class HelpWindow(QMainWindow):
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
         
-        background = QLabel(central_widget)
-        background.setScaledContents(True)
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
         pixmap = QPixmap(resource_path("data/bg.jpeg"))
         if not pixmap.isNull():
-            background.setPixmap(pixmap)
+            self.background.setPixmap(pixmap)
         else:
-            background.setStyleSheet("background-color: #0b0b47;")
-        background.setGeometry(0, 0, self.width(), self.height())
-        background.lower()
+            self.background.setStyleSheet("background-color: #0b0b47;")
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
         
         content_container = QWidget()
         content_container.setStyleSheet("background: transparent;")
@@ -182,7 +197,7 @@ class HelpWindow(QMainWindow):
                 <h3 style='text-align: left;'>Вкладка 2. Графики. Формулы.</h3>
                 <p><b>Зависимость от расстояния:</b></p>
                 <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>k</sup> 
+                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>-k</sup>
                 </div>
                 <p><b>Звездная величина:</b></p>
                 <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
@@ -244,6 +259,11 @@ class HelpWindow(QMainWindow):
         """)
         self.close_btn.clicked.connect(self.close)
         inner_layout.addWidget(self.close_btn, 0, Qt.AlignBottom | Qt.AlignHCenter)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, 'background'):
+            self.background.setGeometry(0, 0, self.width(), self.height())
 
 class SublimationTab(QWidget):
     def __init__(self, parent=None):
@@ -380,12 +400,98 @@ class SublimationTab(QWidget):
         
         row_layout.addWidget(label, 1)
         row_layout.addWidget(input_widget, 2)
-        
+
         return row_widget
+
+
+class GraphWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("График")
+        self.setMinimumSize(1100, 900)
+
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
+        if not pixmap.isNull():
+            self.background.setPixmap(pixmap)
+        else:
+            self.background.setStyleSheet("background-color: #0b0b47;")
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
+
+        graph_container = QFrame()
+        graph_container.setStyleSheet(
+            """
+            QFrame {
+                background-color: white;
+                border-radius: 15px;
+                border: none;
+            }
+            """
+        )
+        graph_layout = QVBoxLayout(graph_container)
+        graph_layout.setContentsMargins(10, 10, 10, 10)
+
+        self.figure = Figure(facecolor="#0b0b47")
+        self.canvas = FigureCanvas(self.figure)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_facecolor("#0b0b47")
+
+        self.ax.tick_params(colors="white")
+        self.ax.xaxis.label.set_color("white")
+        self.ax.yaxis.label.set_color("white")
+        self.ax.title.set_color("white")
+
+        self.toolbar = CustomNavigationToolbar(self.canvas, self)
+
+        graph_layout.addWidget(self.toolbar)
+        graph_layout.addWidget(self.canvas)
+        self.coord_label = QLabel(graph_container)
+        self.coord_label.setStyleSheet(
+            "color: white; background-color: rgba(0, 0, 0, 150); padding: 2px;"
+        )
+        self.coord_label.setFixedWidth(160)
+        self.coord_label.setAlignment(Qt.AlignRight | Qt.AlignTop)
+        self.coord_label.move(graph_container.width() - 170, 5)
+
+        main_layout.addWidget(graph_container)
+
+        # grid lines
+        self.ax.grid(True, linestyle="--", color="gray", alpha=0.5)
+
+        # marker for current cursor position
+        self.cursor_point, = self.ax.plot([], [], marker="o", color="yellow", zorder=4)
+        self.canvas.mpl_connect("motion_notify_event", self.update_coords)
+
+    def update_coords(self, event):
+        if event.inaxes:
+            self.coord_label.setText(f"x: {event.xdata:.2f}, y: {event.ydata:.2f}")
+            self.cursor_point.set_data([event.xdata], [event.ydata])
+        else:
+            self.coord_label.setText("x: -, y: -")
+            self.cursor_point.set_data([], [])
+        self.canvas.draw_idle()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "background"):
+            self.background.setGeometry(0, 0, self.width(), self.height())
+        if hasattr(self, "coord_label"):
+            self.coord_label.move(self.width() - self.coord_label.width() - 20, 10)
+
 
 class GraphTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.graph_window = None
         self.setup_ui()
     
     def setup_ui(self):
@@ -494,7 +600,9 @@ class GraphTab(QWidget):
             'k': QLineEdit(),
             'H': QLineEdit(),
             'n': QLineEdit(),
-            'delta': QLineEdit()
+            'delta': QLineEdit(),
+            'x_points': QLineEdit(),
+            'y_points': QLineEdit()
         }
 
         params_title = QLabel("Параметры для графиков:")
@@ -528,8 +636,32 @@ class GraphTab(QWidget):
         params_layout.addWidget(self.create_param_row("Абсолютная звездная величина (H):", self.graph_params['H'], param_label_style))
         params_layout.addWidget(self.create_param_row("Показатель n:", self.graph_params['n'], param_label_style))
         params_layout.addWidget(self.create_param_row("Δ:", self.graph_params['delta'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Значения X (через пробел/запятую):", self.graph_params['x_points'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Значения Y (через пробел/запятую):", self.graph_params['y_points'], param_label_style))
+        self.load_points_btn = QPushButton("Загрузить точки из файла")
+        self.load_points_btn.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                border-radius: 15px;
+                color: #000034;
+                font-size: 14px;
+                padding: 5px 10px;
+            }
+            QPushButton:hover {
+                background-color: #aaccff;
+            }
+        """)
+        params_layout.addWidget(self.load_points_btn)
 
         layout.addWidget(params_frame)
+
+        self.points_table = QTableWidget()
+        self.points_table.setColumnCount(2)
+        self.points_table.setHorizontalHeaderLabels(["X", "Y"])
+        self.points_table.horizontalHeader().setStretchLastSection(True)
+        self.points_table.setStyleSheet("background-color: white; color: #000034;")
+        self.points_table.setMinimumHeight(150)
+        layout.addWidget(self.points_table)
 
         self.plot_btn = QPushButton("Построить график")
         self.plot_btn.setStyleSheet("""
@@ -547,32 +679,7 @@ class GraphTab(QWidget):
         """)
         layout.addWidget(self.plot_btn)
 
-        graph_container = QFrame()
-        graph_container.setStyleSheet("""
-            QFrame {
-                background-color: white;
-                border-radius: 15px;
-                border: none;
-            }
-        """)
-        graph_layout = QVBoxLayout(graph_container)
-        graph_layout.setContentsMargins(10, 10, 10, 10)
-
-        self.figure = Figure(facecolor='#0b0b47')
-        self.canvas = FigureCanvas(self.figure)
-        self.ax = self.figure.add_subplot(111)
-        self.ax.set_facecolor('#0b0b47')
-
-        self.ax.tick_params(colors='white')
-        self.ax.xaxis.label.set_color('white')
-        self.ax.yaxis.label.set_color('white')
-        self.ax.title.set_color('white')
-
-        self.toolbar = CustomNavigationToolbar(self.canvas, self)
-
-        graph_layout.addWidget(self.toolbar)
-        graph_layout.addWidget(self.canvas)
-        layout.addWidget(graph_container, 1)
+        # График будет отображаться во всплывающем окне
     
     def create_param_row(self, label_text, input_widget, label_style=""):
         row_widget = QWidget()
@@ -615,6 +722,32 @@ class GraphTab(QWidget):
         row_layout.addWidget(input_widget, 2)
         
         return row_widget
+
+    def set_points(self, x_vals, y_vals):
+        self.points_table.setRowCount(0)
+        for xv, yv in zip(x_vals, y_vals):
+            row = self.points_table.rowCount()
+            self.points_table.insertRow(row)
+            self.points_table.setItem(row, 0, QTableWidgetItem(str(xv)))
+            self.points_table.setItem(row, 1, QTableWidgetItem(str(yv)))
+        self.graph_params['x_points'].setText(' '.join(str(v) for v in x_vals))
+        self.graph_params['y_points'].setText(' '.join(str(v) for v in y_vals))
+
+    def get_point_texts(self):
+        if self.points_table.rowCount() > 0:
+            xs = []
+            ys = []
+            for row in range(self.points_table.rowCount()):
+                x_item = self.points_table.item(row, 0)
+                y_item = self.points_table.item(row, 1)
+                if x_item and y_item:
+                    xs.append(x_item.text())
+                    ys.append(y_item.text())
+            return ' '.join(xs), ' '.join(ys)
+        return (
+            self.graph_params['x_points'].text(),
+            self.graph_params['y_points'].text(),
+        )
 
 class MassTab(QWidget):
     def __init__(self, parent=None):
@@ -899,19 +1032,19 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("KUBSU Astro App")
-        self.setFixedSize(1100, 900)
+        self.setMinimumSize(1100, 900)
         self.setup_ui()
     
     def setup_ui(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        background = QLabel(central_widget)
-        background.setScaledContents(True)
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
         pixmap = QPixmap(resource_path("data/bg.jpeg"))
-        background.setPixmap(pixmap)
-        background.setGeometry(0, 0, self.width(), self.height())
-        background.lower()
+        self.background.setPixmap(pixmap)
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
         
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(70, 40, 70, 70)
@@ -1075,3 +1208,10 @@ class MainWindow(QMainWindow):
     def show_help(self):
         self.help_window = HelpWindow(self)
         self.help_window.show()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, 'background'):
+            self.background.setGeometry(0, 0, self.width(), self.height())
+
+
