@@ -404,9 +404,68 @@ class SublimationTab(QWidget):
         return row_widget
 
 
+class GraphWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("График")
+        self.setMinimumSize(1100, 900)
+
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.background = QLabel(central_widget)
+        self.background.setScaledContents(True)
+        pixmap = QPixmap(resource_path("data/bg.jpeg"))
+        if not pixmap.isNull():
+            self.background.setPixmap(pixmap)
+        else:
+            self.background.setStyleSheet("background-color: #0b0b47;")
+        self.background.setGeometry(0, 0, self.width(), self.height())
+        self.background.lower()
+
+        graph_container = QFrame()
+        graph_container.setStyleSheet(
+            """
+            QFrame {
+                background-color: white;
+                border-radius: 15px;
+                border: none;
+            }
+            """
+        )
+        graph_layout = QVBoxLayout(graph_container)
+        graph_layout.setContentsMargins(10, 10, 10, 10)
+
+        self.figure = Figure(facecolor="#0b0b47")
+        self.canvas = FigureCanvas(self.figure)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_facecolor("#0b0b47")
+
+        self.ax.tick_params(colors="white")
+        self.ax.xaxis.label.set_color("white")
+        self.ax.yaxis.label.set_color("white")
+        self.ax.title.set_color("white")
+
+        self.toolbar = CustomNavigationToolbar(self.canvas, self)
+
+        graph_layout.addWidget(self.toolbar)
+        graph_layout.addWidget(self.canvas)
+        main_layout.addWidget(graph_container)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "background"):
+            self.background.setGeometry(0, 0, self.width(), self.height())
+
+
 class GraphTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.graph_window = None
         self.setup_ui()
     
     def setup_ui(self):
@@ -594,33 +653,7 @@ class GraphTab(QWidget):
         """)
         layout.addWidget(self.plot_btn)
 
-        graph_container = QFrame()
-        graph_container.setStyleSheet("""
-            QFrame {
-                background-color: white;
-                border-radius: 15px;
-                border: none;
-            }
-        """)
-        graph_layout = QVBoxLayout(graph_container)
-        graph_layout.setContentsMargins(10, 10, 10, 10)
-
-        self.figure = Figure(facecolor='#0b0b47')
-        self.canvas = FigureCanvas(self.figure)
-        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.ax = self.figure.add_subplot(111)
-        self.ax.set_facecolor('#0b0b47')
-
-        self.ax.tick_params(colors='white')
-        self.ax.xaxis.label.set_color('white')
-        self.ax.yaxis.label.set_color('white')
-        self.ax.title.set_color('white')
-
-        self.toolbar = CustomNavigationToolbar(self.canvas, self)
-
-        graph_layout.addWidget(self.toolbar)
-        graph_layout.addWidget(self.canvas)
-        layout.addWidget(graph_container, 1)
+        # График будет отображаться во всплывающем окне
     
     def create_param_row(self, label_text, input_widget, label_style=""):
         row_widget = QWidget()
