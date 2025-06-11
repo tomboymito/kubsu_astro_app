@@ -454,12 +454,38 @@ class GraphWindow(QMainWindow):
 
         graph_layout.addWidget(self.toolbar)
         graph_layout.addWidget(self.canvas)
+        self.coord_label = QLabel(graph_container)
+        self.coord_label.setStyleSheet(
+            "color: white; background-color: rgba(0, 0, 0, 150); padding: 2px;"
+        )
+        self.coord_label.setFixedWidth(160)
+        self.coord_label.setAlignment(Qt.AlignRight | Qt.AlignTop)
+        self.coord_label.move(graph_container.width() - 170, 5)
+
         main_layout.addWidget(graph_container)
+
+        # grid lines
+        self.ax.grid(True, linestyle="--", color="gray", alpha=0.5)
+
+        # marker for current cursor position
+        self.cursor_point, = self.ax.plot([], [], marker="o", color="yellow", zorder=4)
+        self.canvas.mpl_connect("motion_notify_event", self.update_coords)
+
+    def update_coords(self, event):
+        if event.inaxes:
+            self.coord_label.setText(f"x: {event.xdata:.2f}, y: {event.ydata:.2f}")
+            self.cursor_point.set_data([event.xdata], [event.ydata])
+        else:
+            self.coord_label.setText("x: -, y: -")
+            self.cursor_point.set_data([], [])
+        self.canvas.draw_idle()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if hasattr(self, "background"):
             self.background.setGeometry(0, 0, self.width(), self.height())
+        if hasattr(self, "coord_label"):
+            self.coord_label.move(self.width() - self.coord_label.width() - 20, 10)
 
 
 class GraphTab(QWidget):
