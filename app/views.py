@@ -396,7 +396,10 @@ class SublimationTab(QWidget):
         row_layout.addWidget(label, 1)
         row_layout.addWidget(input_widget, 2)
         
-        return row_widget
+        row_widget.label_widget = label
+        row_widget.input_widget = input_widget
+
+        return row_widget, label
 
 class GraphWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -569,8 +572,10 @@ class GraphTab(QWidget):
             'n': QLineEdit(),
             'delta': QLineEdit(),
             'x_points': QLineEdit(),
-            'y_points': QLineEdit()
+            'y_points': QLineEdit(),
         }
+        self.param_rows = {}
+        self.param_labels = {}
 
         params_title = QLabel("Параметры для графиков:")
         params_title.setStyleSheet("""
@@ -597,14 +602,30 @@ class GraphTab(QWidget):
             }
         """
 
-        params_layout.addWidget(self.create_param_row("Afρ0:", self.graph_params['Afρ0'], param_label_style))
-        params_layout.addWidget(self.create_param_row("r0:", self.graph_params['r0'], param_label_style))
-        params_layout.addWidget(self.create_param_row("k:", self.graph_params['k'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Абсолютная звездная величина (H):", self.graph_params['H'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Показатель n:", self.graph_params['n'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Δ:", self.graph_params['delta'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Значения X (через пробел/запятую):", self.graph_params['x_points'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Значения Y (через пробел/запятую):", self.graph_params['y_points'], param_label_style))
+        self.param_rows['Afρ0'], self.param_labels['Afρ0'] = self.create_param_row("Afρ0:", self.graph_params['Afρ0'], param_label_style)
+        params_layout.addWidget(self.param_rows['Afρ0'])
+
+        self.param_rows['r0'], self.param_labels['r0'] = self.create_param_row("r0:", self.graph_params['r0'], param_label_style)
+        params_layout.addWidget(self.param_rows['r0'])
+
+        self.param_rows['k'], self.param_labels['k'] = self.create_param_row("k:", self.graph_params['k'], param_label_style)
+        params_layout.addWidget(self.param_rows['k'])
+
+        self.param_rows['H'], self.param_labels['H'] = self.create_param_row("Абсолютная звездная величина (H):", self.graph_params['H'], param_label_style)
+        params_layout.addWidget(self.param_rows['H'])
+
+        self.param_rows['n'], self.param_labels['n'] = self.create_param_row("Показатель n:", self.graph_params['n'], param_label_style)
+        params_layout.addWidget(self.param_rows['n'])
+
+        self.param_rows['delta'], self.param_labels['delta'] = self.create_param_row("Δ:", self.graph_params['delta'], param_label_style)
+        params_layout.addWidget(self.param_rows['delta'])
+
+        self.param_rows['x_points'], self.param_labels['x_points'] = self.create_param_row("Значения X (через пробел/запятую):", self.graph_params['x_points'], param_label_style)
+        params_layout.addWidget(self.param_rows['x_points'])
+
+        self.param_rows['y_points'], self.param_labels['y_points'] = self.create_param_row("Значения Y (через пробел/запятую):", self.graph_params['y_points'], param_label_style)
+        params_layout.addWidget(self.param_rows['y_points'])
+
         self.load_points_btn = QPushButton("Загрузить точки из файла")
         self.load_points_btn.setStyleSheet("""
             QPushButton {
@@ -621,6 +642,9 @@ class GraphTab(QWidget):
         params_layout.addWidget(self.load_points_btn)
 
         layout.addWidget(params_frame)
+
+        self.graph_type.currentIndexChanged.connect(self.update_param_fields)
+        self.update_param_fields()
 
         self.points_table = QTableWidget()
         self.points_table.setColumnCount(2)
@@ -686,7 +710,10 @@ class GraphTab(QWidget):
         row_layout.addWidget(label, 1)
         row_layout.addWidget(input_widget, 2)
         
-        return row_widget
+        row_widget.label_widget = label
+        row_widget.input_widget = input_widget
+
+        return row_widget, label
     
     def set_points(self, x_vals, y_vals):
         self.points_table.setRowCount(0)
@@ -713,6 +740,33 @@ class GraphTab(QWidget):
             self.graph_params['x_points'].text(),
             self.graph_params['y_points'].text(),
         )
+    
+    def update_param_fields(self):
+        gtype = self.graph_type.currentText()
+        # Hide all
+        for row in self.param_rows.values():
+            row.hide()
+
+        if gtype == "Afρ от расстояния":
+            self.param_labels['x_points'].setText("r (а.е.):")
+            self.param_labels['y_points'].setText("Afρ:")
+            self.param_rows['x_points'].show()
+            self.param_rows['y_points'].show()
+        elif gtype == "Звездной величины от расстояния":
+            self.param_labels['x_points'].setText("Расстояние (pc):")
+            self.param_labels['y_points'].setText("m:")
+            self.param_rows['x_points'].show()
+            self.param_rows['y_points'].show()
+        elif gtype == "Afρ от даты":
+            self.param_labels['x_points'].setText("Дата (YYYY-MM-DD):")
+            self.param_labels['y_points'].setText("Afρ:")
+            self.param_rows['x_points'].show()
+            self.param_rows['y_points'].show()
+        elif gtype == "Звездной величины от даты":
+            self.param_labels['x_points'].setText("Дата (YYYY-MM-DD):")
+            self.param_labels['y_points'].setText("m:")
+            self.param_rows['x_points'].show()
+            self.param_rows['y_points'].show()
 
 class MassTab(QWidget):
     def __init__(self, parent=None):

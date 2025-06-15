@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import pandas as pd
 from astropy.io import fits
 
 class SublimationModel:
@@ -239,56 +240,67 @@ class GraphModel:
 
     def plot_graph(self, params, graph_type):
         try:
-            Afρ0 = float(params['Afρ0'])
-            r0 = float(params['r0'])
-            k = float(params['k'])
-            H = float(params['H'])
-            n = float(params['n'])
-            delta = float(params['delta'])
             x_vals = params.get('x_vals')
             y_vals = params.get('y_vals')
 
-            if isinstance(x_vals, np.ndarray) and isinstance(y_vals, np.ndarray):
+            if x_vals is None or y_vals is None:
+                return {"error": "Точки не заданы"}
+
+            if graph_type == "Afρ от расстояния":
+                r = np.array(x_vals, dtype=float)
+                afrho = np.array(y_vals, dtype=float)
+                log_r = np.log10(r)
+                log_afrho = np.log10(afrho)
                 return {
-                    "x": x_vals,
-                    "y": y_vals,
-                    "xlabel": "X",
-                    "ylabel": "Y",
-                    "title": "График по заданным точкам",
+                    "x": log_r,
+                    "y": log_afrho,
+                    "xlabel": "log(r), а.е.",
+                    "ylabel": "log(Afρ), см",
+                    "title": "Зависимость log(Afρ) от log(r)",
                     "invert_y": False,
                     "points": True,
                 }
-
-            if graph_type == "Afρ от расстояния":
-                r = np.linspace(0.1, 5, 100)
-                Afρ = Afρ0 * (r / r0) ** (-k)
-                return {"x": r, "y": Afρ, "xlabel": "Расстояние от Солнца (а.е.)",
-                        "ylabel": "Afρ", "title": "Зависимость Afρ от расстояния",
-                        "invert_y": False, "points": False}
             
             elif graph_type == "Звездной величины от расстояния":
-                r = np.linspace(0.1, 5, 100)
-                m = H + 5 * np.log10(delta) + 2.5 * n * np.log10(r)
-                return {"x": r, "y": m, "xlabel": "Расстояние от Солнца (а.е.)",
-                        "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от расстояния",
-                        "invert_y": True, "points": False}
+                d = np.array(x_vals, dtype=float)
+                m = np.array(y_vals, dtype=float)
+                log_d = np.log10(d)
+                return {
+                    "x": log_d,
+                    "y": m,
+                    "xlabel": "log(distance), log(pc)",
+                    "ylabel": "Apparent magnitude (m)",
+                    "title": "Зависимость звёздной величины от расстояния",
+                    "invert_y": True,
+                    "points": True,
+                }
                 
             elif graph_type == "Afρ от даты":
-                t = np.linspace(-50, 50, 100)
-                t0 = 0
-                tau = 10
-                Afρ = Afρ0 * np.exp(-(t - t0) ** 2 / (2 * tau ** 2))
-                return {"x": t, "y": Afρ, "xlabel": "Время (дни)",
-                        "ylabel": "Afρ", "title": "Зависимость Afρ от времени",
-                        "invert_y": False, "points": False}
+                dates = pd.to_datetime(x_vals)
+                afrho = np.array(y_vals, dtype=float)
+                log_afrho = np.log10(afrho)
+                return {
+                    "x": dates,
+                    "y": log_afrho,
+                    "xlabel": "Дата наблюдения",
+                    "ylabel": "log(Afρ), см",
+                    "title": "Изменение активности кометы (Afρ) во времени",
+                    "invert_y": False,
+                    "points": True,
+                }
                 
             elif graph_type == "Звездной величины от даты":
-                t = np.linspace(-50, 50, 100)
-                r = np.clip(r0 + 0.01 * t, 1e-3, None)
-                m = H + 5 * np.log10(delta) + 2.5 * n * np.log10(r)
-                return {"x": t, "y": m, "xlabel": "Время (дни)",
-                        "ylabel": "Звездная величина (m)", "title": "Зависимость звездной величины от времени",
-                        "invert_y": True, "points": False}
+                dates = pd.to_datetime(x_vals)
+                magnitude = np.array(y_vals, dtype=float)
+                return {
+                    "x": dates,
+                    "y": magnitude,
+                    "xlabel": "Дата наблюдения",
+                    "ylabel": "Звёздная величина (m)",
+                    "title": "Изменение звёздной величины со временем",
+                    "invert_y": True,
+                    "points": True,
+                }
 
 
         except ValueError as e:

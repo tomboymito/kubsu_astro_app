@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from point_manager import PointManager
 from views import GraphWindow
 from astropy.io import fits
+import numpy as np
 
 class MainController:
     def __init__(self, models, view):
@@ -108,23 +109,34 @@ class MainController:
     def plot_graph(self):
         tab = self.view.tabs["graphs"]
         x_text, y_text = tab.get_point_texts()
-        ok, msg = self.point_manager.validate_points(x_text, y_text)
-        params = {
-            'Afρ0': tab.graph_params['Afρ0'].text(),
-            'r0': tab.graph_params['r0'].text(),
-            'k': tab.graph_params['k'].text(),
-            'H': tab.graph_params['H'].text(),
-            'n': tab.graph_params['n'].text(),
-            'delta': tab.graph_params['delta'].text(),
-        }
-        if ok:
-            params['x_vals'] = self.point_manager.x
-            params['y_vals'] = self.point_manager.y
-        elif x_text or y_text:
-            QMessageBox.warning(self.view, "Ошибка", msg)
-            return
 
         graph_type = tab.graph_type.currentText()
+
+        params = {}
+
+        if graph_type in ("Afρ от даты", "Звездной величины от даты"):
+            x_parts = self.point_manager._parse_text(x_text)
+            y_parts = self.point_manager._parse_text(y_text)
+            if not x_parts or not y_parts:
+                QMessageBox.warning(self.view, "Ошибка", "Нужно задать списки X и Y")
+                return
+            if len(x_parts) != len(y_parts) or len(x_parts) < 2:
+                QMessageBox.warning(self.view, "Ошибка", "Количество точек X и Y должно совпадать и быть не менее двух")
+                return
+            try:
+                params['x_vals'] = x_parts
+                params['y_vals'] = np.array([float(v) for v in y_parts])
+            except ValueError:
+                QMessageBox.warning(self.view, "Ошибка", "Точки Y должны быть числами")
+                return
+        else:
+            ok, msg = self.point_manager.validate_points(x_text, y_text)
+            if ok:
+                params['x_vals'] = self.point_manager.x
+                params['y_vals'] = self.point_manager.y
+            else:
+                QMessageBox.warning(self.view, "Ошибка", msg)
+                return
         
         result = self.models['graph'].plot_graph(params, graph_type)
         
@@ -150,12 +162,32 @@ class MainController:
         )
         if not file_path:
             return
-        ok, msg = self.point_manager.load_from_file(file_path)
-        if not ok:
-            QMessageBox.warning(self.view, "Ошибка", msg)
-            return
         tab = self.view.tabs["graphs"]
-        tab.set_points(self.point_manager.x, self.point_manager.y)
+        graph_type = tab.graph_type.currentText()
+        if graph_type in ("Afρ от даты", "Звездной величины от даты"):
+            x_vals = []
+            y_vals = []
+            with open(file_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    parts = line.strip().replace(";", " ").replace(",", " ").split()
+                    if len(parts) >= 2:
+                        x_vals.append(parts[0])
+                        try:
+                            y_vals.append(float(parts[1]))
+                        except ValueError:
+                            continue
+            if len(x_vals) < 2 or len(x_vals) != len(y_vals):
+                QMessageBox.warning(self.view, "Ошибка", "Некорректные данные в файле")
+                return
+            tab.set_points(x_vals, y_vals)
+            self.point_manager.x = np.array(x_vals)
+            self.point_manager.y = np.array(y_vals)
+        else:
+            ok, msg = self.point_manager.load_from_file(file_path)
+            if not ok:
+                QMessageBox.warning(self.view, "Ошибка", msg)
+                return
+            tab.set_points(self.point_manager.x, self.point_manager.y)
 
     def calculate_mass(self):
         tab = self.view.tabs["mass"]
