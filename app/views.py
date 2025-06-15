@@ -313,8 +313,8 @@ class SublimationTab(QWidget):
         """
         
         params_layout.addWidget(self.create_param_row("Температура (T) [K]:", self.input_params['T'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Расстояние от звезды (r0) [a.e.]:", self.input_params['r0'], param_label_style))
-        params_layout.addWidget(self.create_param_row("Расстояние от Земли (r⊕) [км или R⊕]:", self.input_params['r_earth'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Расстояние от звезды (r0) [а.е.]:", self.input_params['r0'], param_label_style))
+        params_layout.addWidget(self.create_param_row("Расстояние от Земли (r⊕) [а.е.]:", self.input_params['r_earth'], param_label_style))
         
         layout.addWidget(params_frame)
         
@@ -399,7 +399,7 @@ class SublimationTab(QWidget):
         row_widget.label_widget = label
         row_widget.input_widget = input_widget
 
-        return row_widget, label
+        return row_widget
 
 class GraphWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -427,9 +427,9 @@ class GraphWindow(QMainWindow):
         graph_container.setStyleSheet(
             """
             QFrame {
-                background-color: white;
+                background-color: #0b0b47;
                 border-radius: 15px;
-                border: none;
+                border: 2px solid #aaaaaa;
             }
             """
         )
@@ -496,12 +496,13 @@ class GraphTab(QWidget):
         graph_label.setStyleSheet("color: white; font-weight: bold; font-size: 16px;")
 
         self.graph_type = QComboBox()
-        self.graph_type.addItems([
+        self.graph_types_list = [
             "Afρ от расстояния",
             "Звездной величины от расстояния",
             "Afρ от даты",
-            "Звездной величины от даты"
-        ])
+            "Звездной величины от даты",
+        ]
+        self.graph_type.addItems(self.graph_types_list)
 
         combo_view = QListView()
         combo_view.setStyleSheet("""
@@ -574,6 +575,8 @@ class GraphTab(QWidget):
             'x_points': QLineEdit(),
             'y_points': QLineEdit(),
         }
+        self.saved_params = {t: {} for t in self.graph_types_list}
+        self.last_graph_type = self.graph_types_list[0]
         self.param_rows = {}
         self.param_labels = {}
 
@@ -641,9 +644,24 @@ class GraphTab(QWidget):
         """)
         params_layout.addWidget(self.load_points_btn)
 
+        self.clear_points_btn = QPushButton("Очистить точки")
+        self.clear_points_btn.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                border-radius: 15px;
+                color: #000034;
+                font-size: 14px;
+                padding: 5px 10px;
+            }
+            QPushButton:hover {
+                background-color: #aaccff;
+            }
+        """)
+        params_layout.addWidget(self.clear_points_btn)
+
         layout.addWidget(params_frame)
 
-        self.graph_type.currentIndexChanged.connect(self.update_param_fields)
+        self.graph_type.currentIndexChanged.connect(self.on_graph_type_changed)
         self.update_param_fields()
 
         self.points_table = QTableWidget()
@@ -725,6 +743,11 @@ class GraphTab(QWidget):
         self.graph_params['x_points'].setText(' '.join(str(v) for v in x_vals))
         self.graph_params['y_points'].setText(' '.join(str(v) for v in y_vals))
 
+    def clear_points(self):
+        self.points_table.setRowCount(0)
+        self.graph_params['x_points'].clear()
+        self.graph_params['y_points'].clear()
+
     def get_point_texts(self):
         if self.points_table.rowCount() > 0:
             xs = []
@@ -740,6 +763,18 @@ class GraphTab(QWidget):
             self.graph_params['x_points'].text(),
             self.graph_params['y_points'].text(),
         )
+    
+    def on_graph_type_changed(self):
+        self.saved_params[self.last_graph_type] = {
+            k: w.text() for k, w in self.graph_params.items()
+        }
+        new_type = self.graph_type.currentText()
+        saved = self.saved_params.get(new_type, {})
+        for k, w in self.graph_params.items():
+            if k in saved:
+                w.setText(saved[k])
+        self.last_graph_type = new_type
+        self.update_param_fields()
     
     def update_param_fields(self):
         gtype = self.graph_type.currentText()

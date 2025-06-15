@@ -127,17 +127,16 @@ class SublimationModel:
             r_sun = float(input_params['r0'])
             r_earth_input = input_params['r_earth'].strip()
 
-            if 'R' in r_earth_input:
-                r_earth = float(r_earth_input.replace('R⊕', '').replace('R', '')) * 6371
-            else:
-                r_earth = float(r_earth_input)
+            r_earth_au = float(r_earth_input)
+            AU_KM = 149597870.7
+            r_earth = r_earth_au * AU_KM
 
             R_earth = 6371
             sublimating = []
             result_lines = [
                 f"Расчётные параметры:",
                 f"- Расстояние от Солнца (r☉): {r_sun:.2f} а.е.",
-                f"- Расстояние от Земли (r⊕): {r_earth:.2f} км ({r_earth / R_earth:.2f} R⊕)"
+                f"- Расстояние от Земли (r⊕): {r_earth_au:.2f} а.е. ({r_earth:.2f} км)"
             ]
 
             P_atm = 101325

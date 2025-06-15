@@ -27,6 +27,7 @@ class MainController:
         self.view.tabs["sublimation"].calc_btn.clicked.connect(self.calculate_sublimation)
         self.view.tabs["graphs"].plot_btn.clicked.connect(self.plot_graph)
         self.view.tabs["graphs"].load_points_btn.clicked.connect(self.load_points)
+        self.view.tabs["graphs"].clear_points_btn.clicked.connect(self.view.tabs["graphs"].clear_points)
         self.view.tabs["mass"].calc_btn.clicked.connect(self.calculate_mass)
         self.view.tabs["size"].calc_btn.clicked.connect(self.calculate_size)
     
