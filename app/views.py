@@ -165,72 +165,72 @@ class HelpWindow(QMainWindow):
         content_layout.setContentsMargins(20, 20, 20, 20)
         
         content = QLabel("""
-        <div style='font-family: Arial; color: white; text-align: justify;'>
-            <div style='font-family: Arial; color: white; text-align: justify;'>
+<div style='font-family: Arial; color: white; text-align: justify;'>
+    <div style='font-family: Arial; color: white; text-align: justify;'>
 
-                <h3 style='text-align: left;'>Памятка по использованию приложения</h3>
+        <h1 style='text-align: left; font-size: 30px;'>Памятка по использованию приложения</h1>
 
-                <p><b>Общее руководство.</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    - Приложение разработано для выполнения заданий Астрохакатона 2025, включая расчет сублимации, построение графиков, определение массы комет и размеров их ядер.<br>
-                    - Интерфейс состоит из четырех вкладок: "Сублимация", "Графики", "Масса" и "Размеры ядра".
-                </div>
-
-                <br><br>
-                <h3 style='text-align: left;'>Пошаговое использование.</h3>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    <b>- Запуск:</b> Откройте приложение, выберите нужную вкладку.<br>
-                    <b>- Загрузка данных:</b> Нажмите "Загрузить файл" и выберите .txt файл с параметрами.<br>
-                    <b>- Ввод данных:</b> Введите параметры вручную в соответствующие поля с валидацией.<br>
-                    <b>Расчет:</b> Нажмите "Рассчитать" для получения результатов.<br>
-                    <b>Визуализация:</b> Просмотрите таблицы, графики или текстовые результаты.<br>
-                </div>   
-                    
-                <br><br>
-                <h3 style='text-align: left;'>Вкладка 1. Рассчет сублимации. Формулы.</h3>
-                <p><b>Формула температуры сублимации [K]:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    T<sub>sub</sub>(r<sub>☉</sub>, r<sub>⊕</sub>) = 1.3 × 10<sup>3</sup> × ξ<sup>-1</sup> × (H / 3.2 × 10<sup>10</sup>) × (μ / 170) × (r<sub>☉</sub> / 1 a.e.)<sup>-1/2</sup> × (1 + 0.1 / (1 + (r<sub>⊕</sub> / R<sub>⊕</sub>)<sup>2</sup>)) <br>
-                    где ξ = 1 + 0.02 × ln(P<sub>0</sub> / 6.7×10<sup>14</sup>), R<sub>⊕</sub> = 6371 км (радиус Земли)
-                </div>
-
-                <p><b>Суммарная температура:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    T<sub>total</sub> = [ ( (1-A) × 1361 × r<sub>☉</sub><sup>-2</sup> / (4 × σ × ε) ) + ( 288<sup>4</sup> × (R<sub>⊕</sub> / r<sub>⊕</sub>)<sup>2</sup> × (1 + α)<sup>4</sup> ) ]<sup>1/4</sup> <br>
-                    где A - альбедо частицы (0–1), σ = 5.67×10<sup>-8</sup> Вт/м<sup>2</sup>К<sup>4</sup> (постоянная Стефана-Больцмана), α ≈ 0.3 - доля отражённого Землёй света, R<sub>⊕</sub> = 6371 км (радиус Земли)
-                </div>
-
-                <p><b>Условие сублимации:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    T<sub>total</sub> ≥ T<sub>sub</sub> <span style='font-size: 0.9em;'>и при r<sub>⊕</sub> ≤ 1.1 R<sub>⊕</sub></span>, P<sub>vap</sub>(T) > P<sub>атмосферы</sub>
-                </div>
-
-                <br><br>
-                <h3 style='text-align: left;'>Вкладка 2. Графики.</h3>
-                <p>Во вкладке доступны четыре типа графиков. Точки можно вводить вручную либо загружать из файла с двумя колонками (X и Y).</p>
-                <ul style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    <li><i>Afρ от расстояния</i> — строится зависимость log(Afρ) от log(r).</li>
-                    <li><i>Звездной величины от расстояния</i> — отображается m от log(r).</li>
-                    <li><i>Afρ от даты</i> — график log(Afρ) во времени по датам вида YYYY-MM-DD.</li>
-                    <li><i>Звездной величины от даты</i> — показывает изменение m со временем.</li>
-                </ul>
-                <p>Перед построением убедитесь, что списки X и Y содержат одинаковое количество значений.</p>
-
-                <br><br>
-                <h3 style='text-align: left;'>Вкладка 3. Рассчет массы, выделяемой кометой. Формула.</h3>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    N = 10<sup>-0.4×(m<sub>k</sub> - m<sub>ЛК</sub>)</sup> × Δ<sup>2</sup> × r<sup>2</sup> / (1.37×10<sup>-38</sup> × f(c<sub>2</sub>))<br>
-                    где m<sub>ЛК</sub> = -13.78<sup>m</sup>, f(c<sub>2</sub>) = 0.031
-                </div>
-
-                <br><br>
-                <h3 style='text-align: left;'>Вкладка 4. Рассчет диаметра ядра кометы. Формула.</h3>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    D = 1329 / √p<sub>v</sub> × 10<sup>-0.2×H</sup> <span style="font-size: 0.95em;">(диаметр ядра)</span>
-                </div>                 
-            </div>
+        <p style='font-size: 18px;'><b>Общее руководство.</b></p>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            - Приложение разработано для выполнения заданий Астрохакатона 2025, включая расчет сублимации, построение графиков, определение массы комет и размеров их ядер.<br>
+            - Интерфейс состоит из четырех вкладок: "Сублимация", "Графики", "Масса" и "Размеры ядра".
         </div>
-        """)
+
+        <br><br>
+        <h3 style='text-align: left; font-size: 22px;'>Пошаговое использование.</h3>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            <b>- Запуск:</b> Откройте приложение, выберите нужную вкладку.<br>
+            <b>- Загрузка данных:</b> Нажмите "Загрузить файл" и выберите .txt файл с параметрами.<br>
+            <b>- Ввод данных:</b> Введите параметры вручную в соответствующие поля с валидацией.<br>
+            <b>Расчет:</b> Нажмите "Рассчитать" для получения результатов.<br>
+            <b>Визуализация:</b> Просмотрите таблицы, графики или текстовые результаты.<br>
+        </div>   
+            
+        <br><br>
+        <h1 style='text-align: left; font-size: 22px;'>Вкладка 1. Рассчет сублимации. Формулы.</h1>
+        <p style='font-size: 18px;'><b>Формула температуры сублимации [K]:</b></p>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            T<sub>sub</sub>(r<sub>☉</sub>, r<sub>⊕</sub>) = 1.3 × 10<sup>3</sup> × ξ<sup>-1</sup> × (H / 3.2 × 10<sup>10</sup>) × (μ / 170) × (r<sub>☉</sub> / 1 a.e.)<sup>-1/2</sup> × (1 + 0.1 / (1 + (r<sub>⊕</sub> / R<sub>⊕</sub>)<sup>2</sup>)) <br>
+            где ξ = 1 + 0.02 × ln(P<sub>0</sub> / 6.7×10<sup>14</sup>), R<sub>⊕</sub> = 6371 км (радиус Земли)
+        </div>
+
+        <p style='font-size: 18px;'><b>Суммарная температура:</b></p>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            T<sub>total</sub> = [ ( (1-A) × 1361 × r<sub>☉</sub><sup>-2</sup> / (4 × σ × ε) ) + ( 288<sup>4</sup> × (R<sub>⊕</sub> / r<sub>⊕</sub>)<sup>2</sup> × (1 + α)<sup>4</sup> ) ]<sup>1/4</sup> <br>
+            где A - альбедо частицы (0–1), σ = 5.67×10<sup>-8</sup> Вт/м<sup>2</sup>К<sup>4</sup> (постоянная Стефана-Больцмана), α ≈ 0.3 - доля отражённого Землёй света, R<sub>⊕</sub> = 6371 км (радиус Земли)
+        </div>
+
+        <p style='font-size: 18px;'><b>Условие сублимации:</b></p>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            T<sub>total</sub> ≥ T<sub>sub</sub> <span style='font-size: 18px;'>и при r<sub>⊕</sub> ≤ 1.1 R<sub>⊕</sub></span>, P<sub>vap</sub>(T) > P<sub>атмосферы</sub>
+        </div>
+
+        <br><br>
+        <h1 style='text-align: left; font-size: 22px;'>Вкладка 2. Графики.</h1>
+        <p style='font-size: 18px;'>Во вкладке доступны четыре типа графиков. Точки можно вводить вручную либо загружать из файла с двумя колонками (X и Y).</p>
+        <ul style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            <li><i>Afρ от расстояния</i> — строится зависимость log(Afρ) от log(r).</li>
+            <li><i>Звездной величины от расстояния</i> — отображается m от log(r).</li>
+            <li><i>Afρ от даты</i> — график log(Afρ) во времени по датам вида YYYY-MM-DD.</li>
+            <li><i>Звездной величины от даты</i> — показывает изменение m со временем.</li>
+        </ul>
+        <p style='font-size: 18px;'>Перед построением убедитесь, что списки X и Y содержат одинаковое количество значений.</p>
+
+        <br><br>
+        <h1 style='text-align: left; font-size: 22px;'>Вкладка 3. Рассчет массы, выделяемой кометой. Формула.</h1>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            N = 10<sup>-0.4×(m<sub>k</sub> - m<sub>ЛК</sub>)</sup> × Δ<sup>2</sup> × r<sup>2</sup> / (1.37×10<sup>-38</sup> × f(c<sub>2</sub>))<br>
+            где m<sub>ЛК</sub> = -13.78<sup>m</sup>, f(c<sub>2</sub>) = 0.031
+        </div>
+
+        <br><br>
+        <h1 style='text-align: left; font-size: 22px;'>Вкладка 4. Рассчет диаметра ядра кометы. Формула.</h1>
+        <div style='text-align: left; margin: 10px 0; line-height: 1.35; font-size: 18px;'>
+            D = 1329 / √p<sub>v</sub> × 10<sup>-0.2×H</sup> <span style="font-size: 18px;">(диаметр ядра)</span>
+        </div>                 
+    </div>
+</div>
+""")
         content.setStyleSheet("""
             QLabel {
                 background: transparent;
@@ -284,7 +284,7 @@ class SublimationTab(QWidget):
             }
         """)
         params_layout = QVBoxLayout(params_frame)
-        
+
         self.input_params = {
             'T': QLineEdit(),
             'r0': QLineEdit(),
@@ -295,7 +295,7 @@ class SublimationTab(QWidget):
         title_label.setStyleSheet("""
             QLabel {
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 20px;
                 color: white;
                 border: none;
                 padding: 5px;
@@ -307,12 +307,12 @@ class SublimationTab(QWidget):
         param_label_style = """
             QLabel {
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 18px;
                 color: white;
                 border: 2px solid #aaaaaa;
                 border-radius: 7px;
                 padding: 5px;
-                background-color: #0b0b47;
+                background-color: #0b0b47;                
             }
         """
         
@@ -342,7 +342,7 @@ class SublimationTab(QWidget):
         self.result_label.setStyleSheet("""
             QLabel {
                 color: white;
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: bold;
             }
         """)
@@ -354,6 +354,7 @@ class SublimationTab(QWidget):
             QTextEdit {
                 background-color: white;
                 border-radius: 10px;
+                font-size: 18px;
                 color: #000034;
                 font-family: Consolas;
             }
@@ -372,22 +373,22 @@ class SublimationTab(QWidget):
             label.setStyleSheet("""
                 QLabel {
                     font-weight: bold;
-                    font-size: 14px;
+                    font-size: 18px;
                     color: white;
                     min-width: 250px;
                 }
             """)
         label.setWordWrap(True)
         
-        input_widget.setFixedSize(150, 30)
+        input_widget.setFixedSize(150, 40)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
-                border-radius: 5px;
+                border-radius: 7px;
                 color: white;
                 padding: 5px;
-                font-size: 14px;
+                font-size: 18px;
             }
             QLineEdit:hover {
                 border: 2px solid #5f8bff;
@@ -415,7 +416,7 @@ class GraphWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setContentsMargins(60, 60, 60, 60)
 
         self.background = QLabel(central_widget)
         self.background.setScaledContents(True)
@@ -497,7 +498,7 @@ class GraphTab(QWidget):
 
         graph_selector_layout = QHBoxLayout()
         graph_label = QLabel("Тип графика:")
-        graph_label.setStyleSheet("color: white; font-weight: bold; font-size: 16px;")
+        graph_label.setStyleSheet("color: white; font-weight: bold; font-size: 20px;")
 
         self.graph_type = QComboBox()
         self.graph_types_list = [
@@ -528,7 +529,7 @@ class GraphTab(QWidget):
                 border-radius: 10px;
                 padding: 5px 25px 5px 10px;
                 color: #000034;
-                font-size: 14px;
+                font-size: 18px;
                 min-width: 150px;
             }
             QComboBox:hover {
@@ -594,19 +595,20 @@ class GraphTab(QWidget):
         params_title.setStyleSheet("""
             QLabel {
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 20px;
                 color: white;
                 border: none;
                 padding: 5px;
             }
         """)
+        
         params_title.setAlignment(Qt.AlignCenter)
         params_layout.addWidget(params_title)
 
         param_label_style = """
             QLabel {
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 18px;
                 color: white;
                 border: 2px solid #aaaaaa;
                 border-radius: 7px;
@@ -643,25 +645,27 @@ class GraphTab(QWidget):
         self.load_points_btn.setStyleSheet("""
             QPushButton {
                 background-color: white;
-                border-radius: 15px;
+                border-radius: 20px;
                 color: #000034;
-                font-size: 14px;
-                padding: 5px 10px;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
             }
             QPushButton:hover {
                 background-color: #aaccff;
             }
         """)
         params_layout.addWidget(self.load_points_btn)
-
+        
         self.clear_points_btn = QPushButton("Очистить точки")
         self.clear_points_btn.setStyleSheet("""
             QPushButton {
                 background-color: white;
-                border-radius: 15px;
+                border-radius: 20px;
                 color: #000034;
-                font-size: 14px;
-                padding: 5px 10px;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
             }
             QPushButton:hover {
                 background-color: #aaccff;
@@ -682,7 +686,7 @@ class GraphTab(QWidget):
         self.points_table.setColumnCount(2)
         self.points_table.setHorizontalHeaderLabels(["X", "Y"])
         self.points_table.horizontalHeader().setStretchLastSection(True)
-        self.points_table.setStyleSheet("background-color: white; color: #000034;")
+        self.points_table.setStyleSheet("background-color: white; color: #000034; border-radius: 20px; color: #000034;")
         self.points_table.setMinimumHeight(150)
         layout.addWidget(self.points_table)
 
@@ -716,22 +720,22 @@ class GraphTab(QWidget):
             label.setStyleSheet("""
                 QLabel {
                     font-weight: bold;
-                    font-size: 14px;
+                    font-size: 18px;
                     color: white;
                     min-width: 250px;
                 }
             """)
         label.setWordWrap(True)
         
-        input_widget.setFixedSize(150, 30)
+        input_widget.setFixedSize(150, 40)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
-                border-radius: 5px;
+                border-radius: 7px;
                 color: white;
                 padding: 5px;
-                font-size: 14px;
+                font-size: 18px;
             }
             QLineEdit:hover {
                 border: 2px solid #5f8bff;
@@ -891,7 +895,7 @@ class MassTab(QWidget):
         title_label.setStyleSheet("""
             QLabel {
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 18px;
                 color: white;
                 border: none;
                 padding: 5px;
@@ -903,7 +907,7 @@ class MassTab(QWidget):
         param_label_style = """
             QLabel {
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 18px;
                 color: white;
                 border: 2px solid #aaaaaa;
                 border-radius: 7px;
@@ -947,7 +951,7 @@ class MassTab(QWidget):
         self.result_label.setStyleSheet("""
             QLabel {
                 color: white;
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: bold;
             }
         """)
@@ -960,6 +964,7 @@ class MassTab(QWidget):
                 background-color: white;
                 border-radius: 10px;
                 color: #000034;
+                font-size: 18px;
                 font-family: Consolas;
             }
         """)
@@ -977,22 +982,22 @@ class MassTab(QWidget):
             label.setStyleSheet("""
                 QLabel {
                     font-weight: bold;
-                    font-size: 14px;
+                    font-size: 18px;
                     color: white;
                     min-width: 250px;
                 }
             """)
         label.setWordWrap(True)
         
-        input_widget.setFixedSize(150, 30)
+        input_widget.setFixedSize(150, 40)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
-                border-radius: 5px;
+                border-radius: 7px;
                 color: white;
                 padding: 5px;
-                font-size: 14px;
+                font-size: 18px;
             }
             QLineEdit:hover {
                 border: 2px solid #5f8bff;
@@ -1038,7 +1043,7 @@ class SizeTab(QWidget):
         title_label.setStyleSheet("""
             QLabel {
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 18px;
                 color: white;
                 border: none;
                 padding: 5px;
@@ -1050,7 +1055,7 @@ class SizeTab(QWidget):
         param_label_style = """
             QLabel {
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 18px;
                 color: white;
                 border: 2px solid #aaaaaa;
                 border-radius: 7px;
@@ -1085,7 +1090,7 @@ class SizeTab(QWidget):
         self.result_label.setStyleSheet("""
             QLabel {
                 color: white;
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: bold;
             }
         """)
@@ -1096,6 +1101,7 @@ class SizeTab(QWidget):
         self.result_text.setStyleSheet("""
             QTextEdit {
                 background-color: white;
+                font-size: 18px;
                 border-radius: 10px;
                 color: #000034;
                 font-family: Consolas;
@@ -1115,22 +1121,22 @@ class SizeTab(QWidget):
             label.setStyleSheet("""
                 QLabel {
                     font-weight: bold;
-                    font-size: 14px;
+                    font-size: 18px;
                     color: white;
                     min-width: 250px;
                 }
             """)
         label.setWordWrap(True)
         
-        input_widget.setFixedSize(150, 30)
+        input_widget.setFixedSize(150, 40)
         input_widget.setStyleSheet("""
             QLineEdit {
                 background-color: #0b0b47;
                 border: 2px solid #aaaaaa;
-                border-radius: 5px;
+                border-radius: 7px;
                 color: white;
                 padding: 5px;
-                font-size: 14px;
+                font-size: 18px;
             }
             QLineEdit:hover {
                 border: 2px solid #5f8bff;
@@ -1179,7 +1185,7 @@ class MainWindow(QMainWindow):
                 border-radius: 20px;
                 border: 2px solid white;
                 color: white;
-                font-size: 14px;
+                font-size: 18px;
                 padding: 5px;
             }
             QPushButton:hover {
