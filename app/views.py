@@ -48,10 +48,16 @@ class CustomNavigationToolbar(NavigationToolbar):
         super().__init__(canvas, parent)
         self._update_icons()
 
+        self.setStyleSheet("color: white;")
+
         for attr in ("_coordinates", "coordinates", "coordinates_label"):
             widget = getattr(self, attr, None)
             if widget is not None and hasattr(widget, "setStyleSheet"):
                 widget.setStyleSheet("color: white;")
+
+        for label in self.findChildren(QLabel):
+            if hasattr(label, "setStyleSheet"):
+                label.setStyleSheet("color: white;")
     
     def _update_icons(self):
         icon_mapping = {
@@ -200,23 +206,15 @@ class HelpWindow(QMainWindow):
                 </div>
 
                 <br><br>
-                <h3 style='text-align: left;'>Вкладка 2. Графики. Формулы.</h3>
-                <p><b>Зависимость от расстояния:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    Afρ(r<sub>☉</sub>) = Afρ<sub>0</sub> × (r<sub>☉</sub> / r<sub>0</sub>)<sup>-k</sup> 
-                </div>
-                <p><b>Звездная величина:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    m = H + 5 × log<sub>10</sub>(Δ) + 2.5 × n × log<sub>10</sub>(r<sub>☉</sub>)
-                </div>
-                <p><b>Временная зависимость:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    Afρ(t) = Afρ<sub>peak</sub> × exp( - (t - t<sub>0</sub>)<sup>2</sup> / (2τ<sup>2</sup>) )
-                </div>
-                <p><b>Временная величина:</b></p>
-                <div style='text-align: left; margin: 10px 0; line-height: 1.35;'>
-                    m(t) = m<sub>0</sub> + 2.5 × β × log<sub>10</sub>(r<sub>☉</sub>(t) / r<sub>0</sub>)
-                </div>
+                <h3 style='text-align: left;'>Вкладка 2. Графики.</h3>
+                <p>Во вкладке доступны четыре типа графиков. Точки можно вводить вручную либо загружать из файла с двумя колонками (X и Y).</p>
+                <ul style='text-align: left; margin: 10px 0; line-height: 1.35;'>
+                    <li><i>Afρ от расстояния</i> — строится зависимость log(Afρ) от log(r).</li>
+                    <li><i>Звездной величины от расстояния</i> — отображается m от log(r).</li>
+                    <li><i>Afρ от даты</i> — график log(Afρ) во времени по датам вида YYYY-MM-DD.</li>
+                    <li><i>Звездной величины от даты</i> — показывает изменение m со временем.</li>
+                </ul>
+                <p>Перед построением убедитесь, что списки X и Y содержат одинаковое количество значений.</p>
 
                 <br><br>
                 <h3 style='text-align: left;'>Вкладка 3. Рассчет массы, выделяемой кометой. Формула.</h3>
