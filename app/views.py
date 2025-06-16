@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -46,6 +47,10 @@ class CustomNavigationToolbar(NavigationToolbar):
     def __init__(self, canvas, parent=None):
         super().__init__(canvas, parent)
         self._update_icons()
+
+        for attr in ("_coordinates", "coordinates", "coordinates_label"):
+            if hasattr(self, attr):
+                getattr(self, attr).setStyleSheet("color: white;")
     
     def _update_icons(self):
         icon_mapping = {
@@ -575,7 +580,13 @@ class GraphTab(QWidget):
             'x_points': QLineEdit(),
             'y_points': QLineEdit(),
         }
-        self.saved_params = {t: {} for t in self.graph_types_list}
+        self.params_files = {
+            "Afρ от расстояния": resource_path("data/params_afrho_r.json"),
+            "Звездной величины от расстояния": resource_path("data/params_mag_r.json"),
+            "Afρ от даты": resource_path("data/params_afrho_date.json"),
+            "Звездной величины от даты": resource_path("data/params_mag_date.json"),
+        }
+        self.saved_params = {t: self._load_params(t) for t in self.graph_types_list}
         self.last_graph_type = self.graph_types_list[0]
         self.param_rows = {}
         self.param_labels = {}
@@ -663,6 +674,11 @@ class GraphTab(QWidget):
 
         self.graph_type.currentIndexChanged.connect(self.on_graph_type_changed)
         self.update_param_fields()
+        saved = self.saved_params.get(self.last_graph_type, {})
+        for k, w in self.graph_params.items():
+            if k in saved:
+                w.setText(saved[k])
+        self._update_points_table(saved.get('x_points', ''), saved.get('y_points', ''))
 
         self.points_table = QTableWidget()
         self.points_table.setColumnCount(2)
@@ -733,6 +749,43 @@ class GraphTab(QWidget):
 
         return row_widget, label
     
+    def _parse_text(self, text: str):
+        text = text.strip()
+        if not text:
+            return []
+        if ',' in text and ' ' not in text:
+            parts = text.split(',')
+        else:
+            parts = text.replace(',', ' ').split()
+        return parts
+
+    def _load_params(self, gtype):
+        path = self.params_files.get(gtype)
+        if path and os.path.exists(path):
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                return {}
+        return {}
+
+    def _save_params(self, gtype, params):
+        path = self.params_files.get(gtype)
+        if path:
+            try:
+                with open(path, 'w', encoding='utf-8') as f:
+                    json.dump(params, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+
+    def _update_points_table(self, x_text, y_text):
+        xs = self._parse_text(x_text)
+        ys = self._parse_text(y_text)
+        if xs and ys and len(xs) == len(ys):
+            self.set_points(xs, ys)
+        else:
+            self.clear_points()
+    
     def set_points(self, x_vals, y_vals):
         self.points_table.setRowCount(0)
         for xv, yv in zip(x_vals, y_vals):
@@ -742,11 +795,17 @@ class GraphTab(QWidget):
             self.points_table.setItem(row, 1, QTableWidgetItem(str(yv)))
         self.graph_params['x_points'].setText(' '.join(str(v) for v in x_vals))
         self.graph_params['y_points'].setText(' '.join(str(v) for v in y_vals))
+        ctype = self.graph_type.currentText()
+        self.saved_params[ctype] = {k: w.text() for k, w in self.graph_params.items()}
+        self._save_params(ctype, self.saved_params[ctype])
 
     def clear_points(self):
         self.points_table.setRowCount(0)
         self.graph_params['x_points'].clear()
         self.graph_params['y_points'].clear()
+        ctype = self.graph_type.currentText()
+        self.saved_params[ctype] = {k: w.text() for k, w in self.graph_params.items()}
+        self._save_params(ctype, self.saved_params[ctype])
 
     def get_point_texts(self):
         if self.points_table.rowCount() > 0:
@@ -768,11 +827,15 @@ class GraphTab(QWidget):
         self.saved_params[self.last_graph_type] = {
             k: w.text() for k, w in self.graph_params.items()
         }
+        self._save_params(self.last_graph_type, self.saved_params[self.last_graph_type])
         new_type = self.graph_type.currentText()
+        if new_type not in self.saved_params:
+            self.saved_params[new_type] = self._load_params(new_type)
         saved = self.saved_params.get(new_type, {})
         for k, w in self.graph_params.items():
             if k in saved:
                 w.setText(saved[k])
+        self._update_points_table(saved.get('x_points', ''), saved.get('y_points', ''))
         self.last_graph_type = new_type
         self.update_param_fields()
     
