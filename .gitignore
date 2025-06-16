@@ -1,0 +1,5 @@
+__pycache__/
+app/__pycache__/
+build
+dist
+kubsu_astro_app.egg-info
