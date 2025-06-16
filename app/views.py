@@ -678,7 +678,6 @@ class GraphTab(QWidget):
         for k, w in self.graph_params.items():
             if k in saved:
                 w.setText(saved[k])
-        self._update_points_table(saved.get('x_points', ''), saved.get('y_points', ''))
 
         self.points_table = QTableWidget()
         self.points_table.setColumnCount(2)
@@ -687,6 +686,8 @@ class GraphTab(QWidget):
         self.points_table.setStyleSheet("background-color: white; color: #000034;")
         self.points_table.setMinimumHeight(150)
         layout.addWidget(self.points_table)
+
+        self._update_points_table(saved.get('x_points', ''), saved.get('y_points', ''))
 
         self.plot_btn = QPushButton("Построить график")
         self.plot_btn.setStyleSheet("""
