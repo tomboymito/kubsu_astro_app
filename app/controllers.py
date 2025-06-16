@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from app.point_manager import PointManager
-from app.views import GraphWindow
+from point_manager import PointManager
+from views import GraphWindow
 from astropy.io import fits
 import numpy as np
 
