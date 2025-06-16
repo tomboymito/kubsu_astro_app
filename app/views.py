@@ -49,8 +49,9 @@ class CustomNavigationToolbar(NavigationToolbar):
         self._update_icons()
 
         for attr in ("_coordinates", "coordinates", "coordinates_label"):
-            if hasattr(self, attr):
-                getattr(self, attr).setStyleSheet("color: white;")
+            widget = getattr(self, attr, None)
+            if widget is not None and hasattr(widget, "setStyleSheet"):
+                widget.setStyleSheet("color: white;")
     
     def _update_icons(self):
         icon_mapping = {
