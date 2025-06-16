@@ -927,7 +927,7 @@ class MassTab(QWidget):
         
         layout.addWidget(params_frame)
         
-        self.calc_btn = QPushButton("Рассчитать массу пыли, выделяемую кометы")
+        self.calc_btn = QPushButton("Рассчитать массу пыли, выделяемую кометой")
         self.calc_btn.setStyleSheet("""
             QPushButton {
                 background-color: white;

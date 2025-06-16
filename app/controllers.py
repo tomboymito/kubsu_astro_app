@@ -152,6 +152,7 @@ class MainController:
             window.ax.set_xlabel(result['xlabel'])
             window.ax.set_ylabel(result['ylabel'])
             window.ax.set_title(result['title'])
+            window.ax.grid(True)
             if result['invert_y']:
                 window.ax.invert_yaxis()
             window.canvas.draw()

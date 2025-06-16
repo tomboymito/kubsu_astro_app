@@ -321,7 +321,7 @@ class MassModel:
             f_c2 = 0.031
             
             numerator = 10**(-0.4 * (m_k - m_nk)) * delta**2 * r**2
-            denominator = 1.37 * 10**(-38) * f_c2
+            denominator = 1.37 * 10**(-26) * f_c2
             N = numerator / denominator
             
             N_kg = N
